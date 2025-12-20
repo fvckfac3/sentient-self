@@ -9,15 +9,19 @@ import bcrypt from 'bcryptjs'
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    // Google OAuth - commented out until credentials are configured
+    // Uncomment and add real credentials to use Google sign-in
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
+    
     // Apple provider requires proper key setup - commented out until configured
     // AppleProvider({
     //   clientId: process.env.APPLE_ID!,
     //   clientSecret: process.env.APPLE_SECRET!,
     // }),
+    
     CredentialsProvider({
       name: 'credentials',
       credentials: {

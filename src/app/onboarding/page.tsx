@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useAuthStore } from '@/store/auth'
 import { OnboardingStep } from '@/components/onboarding/onboarding-step'
 import { WelcomeStep } from '@/components/onboarding/welcome-step'
 import { IntentStep } from '@/components/onboarding/intent-step'
@@ -19,6 +20,7 @@ const TOTAL_STEPS = 8
 export default function OnboardingPage() {
   const router = useRouter()
   const { data: session } = useSession()
+  const { setUser } = useAuthStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [baselineProfile, setBaselineProfile] = useState<Partial<UserBaselineProfile>>({
     primary_intents: [],
@@ -72,6 +74,14 @@ export default function OnboardingPage() {
       })
 
       if (response.ok) {
+        // Fetch updated user data to sync store
+        const updatedSession = await fetch('/api/auth/session')
+        const sessionData = await updatedSession.json()
+        
+        if (sessionData?.user) {
+          setUser(sessionData.user)
+        }
+        
         router.push('/chat')
       } else {
         console.error('Failed to complete onboarding')

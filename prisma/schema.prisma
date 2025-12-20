@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -111,7 +112,7 @@ model Exercise {
   id        String @id
   title     String
   framework String
-  topic     String
+  topic     String?
   aspect    String
   aiPrompt  String @db.Text
   

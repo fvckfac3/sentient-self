@@ -10,25 +10,31 @@ async function main() {
   // Clear existing exercises
   await prisma.exercise.deleteMany()
 
-  // Seed exercises from the JSON data
-  const exercises = Object.entries(exerciseData).map(([id, exercise]: [string, any]) => ({
-    id,
-    title: exercise.title,
-    framework: exercise.framework,
-    topic: exercise.topic,
-    aspect: exercise.aspect,
-    aiPrompt: exercise.ai_prompt
+  // Parse the exercises from the JSON structure
+  const jsonData = exerciseData as { metadata: any; exercises: any[] }
+
+  // Map the JSON fields to Prisma Exercise model fields
+  const exercises = jsonData.exercises.map((exercise: any) => ({
+    id: exercise.id,
+    title: exercise.title || 'Untitled Exercise',
+    framework: exercise.framework_used || 'General',
+    topic: exercise.topic || null, // Handle optional topic field
+    aspect: exercise.specific_aspect || 'General',
+    aiPrompt: exercise.ai_prompt || ''
   }))
 
-  console.log(`📚 Seeding ${exercises.length} exercises...`)
-  
-  for (const exercise of exercises) {
-    await prisma.exercise.create({
-      data: exercise
-    })
-  }
+  console.log(`📚 Seeding ${exercises.length} exercises from database...`)
+  console.log(`   Metadata version: ${jsonData.metadata.version}`)
+  console.log(`   Last updated: ${jsonData.metadata.last_updated}`)
+
+  // Batch create exercises for better performance
+  await prisma.exercise.createMany({
+    data: exercises,
+    skipDuplicates: true
+  })
 
   console.log('✅ Database seeded successfully!')
+  console.log(`   Total exercises seeded: ${exercises.length}`)
 }
 
 main()

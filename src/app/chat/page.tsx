@@ -9,6 +9,7 @@ import { ChatInterface } from '@/components/chat/chat-interface'
 import { CrisisScreen } from '@/components/chat/crisis-screen'
 import { ExerciseCard } from '@/components/exercises/exercise-card'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { Nav } from '@/components/layout/nav'
 
 export default function ChatPage() {
   const router = useRouter()
@@ -46,26 +47,32 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto h-screen flex">
-        {/* Main Chat Interface */}
-        <div className="flex-1 flex flex-col">
-          <ChatInterface />
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Navigation */}
+      <Nav />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex">
+        <div className="container mx-auto h-full flex">
+          {/* Main Chat Interface */}
+          <div className="flex-1 flex flex-col">
+            <ChatInterface />
+          </div>
 
-        {/* Sidebar - Exercise suggestions, analytics, etc. */}
-        <div className="w-80 border-l border-border p-4 hidden lg:block">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-foreground mb-2">Session Info</h3>
-              <div className="text-sm text-muted-foreground">
-                <p>State: {state}</p>
-                <p>User: {user?.email}</p>
-                <p>Tier: {user?.subscriptionTier}</p>
+          {/* Sidebar - Exercise suggestions, analytics, etc. */}
+          <div className="w-80 border-l border-border p-4 hidden lg:block">
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">Session Info</h3>
+                <div className="text-sm text-muted-foreground">
+                  <p>State: {state}</p>
+                  <p>User: {user?.email}</p>
+                  <p>Tier: {user?.subscriptionTier}</p>
+                </div>
               </div>
+              
+              {/* Exercise suggestions will appear here when available */}
             </div>
-            
-            {/* Exercise suggestions will appear here when available */}
           </div>
         </div>
       </div>
