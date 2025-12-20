@@ -1,0 +1,727 @@
+{
+  "metadata": {
+    "version": "3.0",
+    "last_updated": "2024-11-27",
+    "total_frameworks": 13,
+    "description": "Complete Sentient Self therapeutic frameworks - 13 evidence-based frameworks for AI-guided personal development"
+  },
+  "frameworks": [
+    {
+      "framework_name": "The Socratic Deep-Dive",
+      "core_mechanism": "Sequential reflective questioning followed by AI-powered pattern analysis and prescriptive synthesis",
+      "description": "This framework uses a series of progressively deeper questions to help users surface unconscious patterns, beliefs, and behaviors. After data collection, the AI shifts into an analytical role to identify patterns and provide actionable guidance.",
+      "therapeutic_basis": [
+        "Socratic Questioning (CBT)",
+        "Reflective Practice",
+        "Pattern Recognition"
+      ],
+      "phases": [
+        {
+          "phase_name": "Intention Setting",
+          "ai_role": "Empathetic Guide",
+          "user_action": "States the area of exploration and desired outcome",
+          "processing_instruction": "Understand the scope and prepare a questioning strategy tailored to the user's stated intention"
+        },
+        {
+          "phase_name": "Sequential Questioning",
+          "ai_role": "Socratic Questioner",
+          "user_action": "Responds to 8-12 reflective questions, one at a time",
+          "processing_instruction": "Ask progressively deeper questions that build on previous answers, designed to surface unconscious patterns, beliefs, and behaviors"
+        },
+        {
+          "phase_name": "Pattern Analysis",
+          "ai_role": "Wise Observer or Higher Self",
+          "user_action": "Receives comprehensive analysis",
+          "processing_instruction": "Analyze all responses to identify recurring themes, limiting beliefs, negative patterns, positive strengths, and growth opportunities"
+        },
+        {
+          "phase_name": "Synthesis & Prescription",
+          "ai_role": "Compassionate Coach",
+          "user_action": "Receives actionable guidance",
+          "processing_instruction": "Synthesize insights into concrete, personalized recommendations"
+        }
+      ],
+      "final_deliverables": [
+        "Identified negative patterns or limiting beliefs",
+        "Identified positive patterns or strengths to leverage",
+        "Daily affirmations tailored to the user's patterns",
+        "Actionable behavioral steps for change",
+        "Encouragement message acknowledging progress"
+      ],
+      "best_suited_for": [
+        "Self-discovery",
+        "Belief examination",
+        "Pattern recognition",
+        "Behavioral change"
+      ]
+    },
+    {
+      "framework_name": "The Narrative Re-authoring",
+      "core_mechanism": "User writes or describes a personal story/memory, and the AI helps them reframe, edit, or conclude it from an empowered perspective",
+      "description": "This framework leverages narrative therapy principles to help users externalize their experiences, examine the stories they tell about themselves, and consciously rewrite those narratives from a place of agency and growth.",
+      "therapeutic_basis": [
+        "Narrative Therapy",
+        "Cognitive Reframing",
+        "Meaning-Making"
+      ],
+      "phases": [
+        {
+          "phase_name": "Story Elicitation",
+          "ai_role": "Curious Listener",
+          "user_action": "Writes or describes a significant memory, recurring story, or self-narrative in detail",
+          "processing_instruction": "Receive the narrative without judgment, noting key themes, emotions, and the user's role in the story"
+        },
+        {
+          "phase_name": "Narrative Deconstruction",
+          "ai_role": "Analytical Guide",
+          "user_action": "Responds to questions about the story's themes, their role, and alternative perspectives",
+          "processing_instruction": "Ask 4-6 questions that help the user externalize the story, identify limiting interpretations, and consider alternative meanings"
+        },
+        {
+          "phase_name": "Reframing & Re-authoring",
+          "ai_role": "Creative Collaborator",
+          "user_action": "Works with AI to rewrite the narrative from an empowered perspective",
+          "processing_instruction": "Guide the user to rewrite key elements of the story, emphasizing agency, resilience, and growth. Offer alternative interpretations and endings."
+        },
+        {
+          "phase_name": "Integration",
+          "ai_role": "Reflective Mirror",
+          "user_action": "Receives the rewritten narrative and integration prompts",
+          "processing_instruction": "Present the reauthored narrative alongside the original, highlighting shifts in perspective and meaning"
+        }
+      ],
+      "final_deliverables": [
+        "Original narrative summary with identified limiting themes",
+        "Reauthored narrative from an empowered perspective",
+        "Key perspective shifts highlighted",
+        "Integration questions for ongoing reflection",
+        "Affirmation based on the new narrative"
+      ],
+      "best_suited_for": [
+        "Trauma processing",
+        "Identity work",
+        "Meaning-making",
+        "Overcoming victim narratives"
+      ]
+    },
+    {
+      "framework_name": "The Parts Dialogue",
+      "core_mechanism": "User identifies conflicting internal parts (e.g., Inner Critic, Scared Child, Ambitious Self), and the AI facilitates a structured dialogue between them to achieve understanding and integration",
+      "description": "Based on Internal Family Systems (IFS) therapy, this framework helps users recognize that internal conflict often stems from different 'parts' of themselves with competing needs. By facilitating dialogue, the AI helps these parts understand each other and work together.",
+      "therapeutic_basis": [
+        "Internal Family Systems (IFS)",
+        "Gestalt Therapy",
+        "Parts Work"
+      ],
+      "phases": [
+        {
+          "phase_name": "Parts Identification",
+          "ai_role": "Neutral Facilitator",
+          "user_action": "Identifies 2-4 conflicting internal parts and describes each one's voice, needs, and fears",
+          "processing_instruction": "Help the user name and characterize distinct internal parts, ensuring each is described with compassion and specificity"
+        },
+        {
+          "phase_name": "Individual Part Exploration",
+          "ai_role": "Empathetic Interviewer",
+          "user_action": "Speaks 'as' each part, answering questions from that part's perspective",
+          "processing_instruction": "Ask each part 3-5 questions to understand its positive intention, its fears, and what it needs to feel safe"
+        },
+        {
+          "phase_name": "Facilitated Dialogue",
+          "ai_role": "Mediator",
+          "user_action": "Engages in a back-and-forth dialogue between parts, facilitated by AI prompts",
+          "processing_instruction": "Facilitate a conversation where each part can express itself to the others, with the AI ensuring each part is heard and understood"
+        },
+        {
+          "phase_name": "Integration & Harmony",
+          "ai_role": "Wise Self or Compassionate Observer",
+          "user_action": "Receives a synthesis of how the parts can work together",
+          "processing_instruction": "Synthesize the dialogue into a coherent understanding of how these parts can coexist and support the user's whole self"
+        }
+      ],
+      "final_deliverables": [
+        "Summary of each part's positive intention and needs",
+        "Key insights from the inter-part dialogue",
+        "Integration statement showing how parts can work together",
+        "Practices for honoring each part's needs",
+        "Affirmation acknowledging internal wholeness"
+      ],
+      "best_suited_for": [
+        "Internal conflict",
+        "Self-sabotage",
+        "Shame work",
+        "Decision-making paralysis",
+        "Self-acceptance"
+      ]
+    },
+    {
+      "framework_name": "The Future-Self Visualization & Back-casting",
+      "core_mechanism": "User is guided through a vivid visualization of their desired future self, then works backward to identify the beliefs, behaviors, and steps needed to become that person",
+      "description": "This framework combines visualization techniques with strategic planning. By starting with the end in mind, users can identify the gap between current and future self, then create a roadmap to bridge that gap.",
+      "therapeutic_basis": [
+        "Solution-Focused Therapy",
+        "Positive Psychology",
+        "Goal-Setting Theory",
+        "Visualization"
+      ],
+      "phases": [
+        {
+          "phase_name": "Future-Self Visualization",
+          "ai_role": "Guided Meditation Facilitator",
+          "user_action": "Responds to prompts that help them vividly imagine their ideal future self (1-5 years ahead)",
+          "processing_instruction": "Guide the user through 6-8 detailed visualization prompts covering: daily life, relationships, work, emotional state, physical presence, values embodied, and challenges overcome"
+        },
+        {
+          "phase_name": "Future-Self Interview",
+          "ai_role": "Interviewer",
+          "user_action": "Answers questions 'as' their future self, describing the journey and transformation",
+          "processing_instruction": "Ask the user to speak as their future self, answering 4-6 questions about how they got there, what they let go of, and what they embraced"
+        },
+        {
+          "phase_name": "Gap Analysis",
+          "ai_role": "Strategic Analyst",
+          "user_action": "Identifies the differences between current self and future self",
+          "processing_instruction": "Help the user articulate the specific beliefs, behaviors, relationships, and circumstances that differ between now and the future vision"
+        },
+        {
+          "phase_name": "Back-casting Roadmap",
+          "ai_role": "Strategic Coach",
+          "user_action": "Receives a step-by-step roadmap working backward from the future",
+          "processing_instruction": "Create a timeline working backward from the future vision to the present, identifying key milestones, belief shifts, and action steps"
+        }
+      ],
+      "final_deliverables": [
+        "Vivid description of future self",
+        "Key differences between current and future self",
+        "Limiting beliefs to release",
+        "Empowering beliefs to adopt",
+        "Quarterly milestones for the next 1-2 years",
+        "Immediate next steps (first 30 days)",
+        "Affirmation from future self to current self"
+      ],
+      "best_suited_for": [
+        "Purpose discovery",
+        "Goal clarity",
+        "Motivation",
+        "Life transitions",
+        "Creating vision"
+      ]
+    },
+    {
+      "framework_name": "The Belief Audit & Reframe",
+      "core_mechanism": "User identifies core beliefs about themselves, others, or the world, then systematically challenges the evidence for these beliefs and replaces them with accurate, empowering alternatives",
+      "description": "Rooted in Cognitive Behavioral Therapy (CBT), this framework helps users identify automatic thoughts and core beliefs, examine the evidence for and against them, and consciously adopt more accurate and helpful beliefs.",
+      "therapeutic_basis": [
+        "Cognitive Behavioral Therapy (CBT)",
+        "Rational Emotive Behavior Therapy (REBT)",
+        "Cognitive Restructuring"
+      ],
+      "phases": [
+        {
+          "phase_name": "Belief Identification",
+          "ai_role": "Socratic Questioner",
+          "user_action": "Identifies 3-5 core beliefs in a specific domain (self, relationships, work, etc.)",
+          "processing_instruction": "Help the user articulate their automatic thoughts and trace them back to underlying core beliefs. Ensure beliefs are stated clearly and specifically."
+        },
+        {
+          "phase_name": "Evidence Examination",
+          "ai_role": "Neutral Investigator",
+          "user_action": "Lists evidence for and against each belief",
+          "processing_instruction": "For each belief, prompt the user to provide concrete evidence supporting it and evidence contradicting it. Challenge overgeneralizations and cognitive distortions."
+        },
+        {
+          "phase_name": "Cognitive Distortion Analysis",
+          "ai_role": "CBT Therapist",
+          "user_action": "Receives analysis of cognitive distortions present in their beliefs",
+          "processing_instruction": "Identify cognitive distortions (all-or-nothing thinking, overgeneralization, catastrophizing, etc.) present in the user's beliefs and explain how they distort reality"
+        },
+        {
+          "phase_name": "Belief Reframing",
+          "ai_role": "Collaborative Coach",
+          "user_action": "Works with AI to create accurate, balanced, empowering alternative beliefs",
+          "processing_instruction": "Guide the user to reframe each limiting belief into a more accurate and empowering version that acknowledges reality while supporting growth"
+        },
+        {
+          "phase_name": "Integration Practice",
+          "ai_role": "Accountability Partner",
+          "user_action": "Receives practices for reinforcing new beliefs",
+          "processing_instruction": "Provide specific exercises, affirmations, and behavioral experiments to help the user internalize and embody the new beliefs"
+        }
+      ],
+      "final_deliverables": [
+        "List of identified limiting beliefs",
+        "Evidence analysis for each belief",
+        "Cognitive distortions identified",
+        "Reframed empowering beliefs",
+        "Daily affirmations for each new belief",
+        "Behavioral experiments to test new beliefs",
+        "Journaling prompts for ongoing practice"
+      ],
+      "best_suited_for": [
+        "Anxiety",
+        "Depression",
+        "Low self-worth",
+        "Perfectionism",
+        "Relationship issues",
+        "Self-sabotage"
+      ]
+    },
+    {
+      "framework_name": "The Values Clarification & Alignment Check",
+      "core_mechanism": "User identifies their core values through guided exploration, then audits their current life against those values to highlight areas of alignment and dissonance, followed by action planning",
+      "description": "This framework helps users get clear on what truly matters to them (values) and then objectively assess whether their daily life, relationships, and choices reflect those values. Dissonance becomes a roadmap for change.",
+      "therapeutic_basis": [
+        "Acceptance and Commitment Therapy (ACT)",
+        "Values-Based Living",
+        "Existential Therapy"
+      ],
+      "phases": [
+        {
+          "phase_name": "Values Exploration",
+          "ai_role": "Reflective Guide",
+          "user_action": "Explores and identifies 5-7 core personal values through prompts and exercises",
+          "processing_instruction": "Guide the user through values card sorts, peak experience analysis, and reflective questions to identify their authentic core values (not shoulds or societal expectations)"
+        },
+        {
+          "phase_name": "Values Definition",
+          "ai_role": "Clarifying Partner",
+          "user_action": "Defines what each value means to them personally and why it matters",
+          "processing_instruction": "Help the user articulate what each value means in concrete terms and explore the personal significance of each value"
+        },
+        {
+          "phase_name": "Life Audit",
+          "ai_role": "Neutral Auditor",
+          "user_action": "Assesses current life domains (work, relationships, health, leisure, etc.) against each core value",
+          "processing_instruction": "Guide the user through a systematic audit of major life domains, rating alignment with each core value on a scale and providing specific examples"
+        },
+        {
+          "phase_name": "Dissonance Analysis",
+          "ai_role": "Compassionate Analyst",
+          "user_action": "Receives analysis of where values and life are misaligned",
+          "processing_instruction": "Identify and present areas of significant values-life dissonance, exploring the costs of this misalignment and the potential benefits of greater alignment"
+        },
+        {
+          "phase_name": "Alignment Action Planning",
+          "ai_role": "Strategic Coach",
+          "user_action": "Receives specific action steps to bring life into greater alignment with values",
+          "processing_instruction": "Create a prioritized action plan with specific, values-aligned behaviors the user can implement in the short and medium term"
+        }
+      ],
+      "final_deliverables": [
+        "List of 5-7 core values with personal definitions",
+        "Life audit results showing alignment scores by domain",
+        "Analysis of key areas of values-life dissonance",
+        "Costs of current misalignment",
+        "Benefits of greater alignment",
+        "Prioritized action plan for values-aligned living",
+        "Values-based decision-making framework",
+        "Weekly values check-in practice"
+      ],
+      "best_suited_for": [
+        "Life transitions",
+        "Decision-making",
+        "Burnout",
+        "Lack of fulfillment",
+        "Purpose discovery",
+        "Authenticity"
+      ]
+    },
+    {
+      "framework_name": "The Neuro-Sovereignty Protocol",
+      "core_mechanism": "Addiction is a neurobiological hijacking, not a moral failing. Recovery is about systematically reclaiming control over your brain's reward system and executive functions through understanding and deliberate practice.",
+      "description": "Reclaiming neurobiological authority through self-directed neuroplasticity",
+      "therapeutic_basis": [
+        "Neuroscience",
+        "cognitive behavioral therapy",
+        "mindfulness-based relapse prevention",
+        "neuroplasticity research"
+      ],
+      "phases": [
+        {
+          "phase_name": "Neural Recognition",
+          "ai_role": "Educate about neurobiology of addiction while maintaining hope and agency. Help user understand their brain has been hijacked, not broken.",
+          "user_action": "Map their specific neural patterns, triggers, and reward system hijacking",
+          "processing_instruction": "Guide the user through understanding how addiction has hijacked brain systems. Educate about neurobiology of addiction while maintaining hope and agency. Help user understand their brain has been hijacked, not broken."
+        },
+        {
+          "phase_name": "Urge Decoding",
+          "ai_role": "Guide analysis of cravings to reveal underlying needs, values, and suppressed aspects of self",
+          "user_action": "Track and decode craving patterns, identify what cravings are really asking for",
+          "processing_instruction": "Guide the user through learning to interpret cravings as encrypted information about unmet needs. Guide analysis of cravings to reveal underlying needs, values, and suppressed aspects of self"
+        },
+        {
+          "phase_name": "Pathway Reconstruction",
+          "ai_role": "Provide progressive training protocols for strengthening executive function and building healthy reward pathways",
+          "user_action": "Implement daily practices that build new neural pathways aligned with authentic values",
+          "processing_instruction": "Guide the user through building new neural pathways through deliberate practice and repetition. Provide progressive training protocols for strengthening executive function and building healthy reward pathways"
+        },
+        {
+          "phase_name": "Sovereignty Embodiment",
+          "ai_role": "Support integration and long-term sustainability, help user embody new neural patterns",
+          "user_action": "Embody new patterns as automatic responses, maintain sovereignty through challenges",
+          "processing_instruction": "Guide the user through living from reclaimed neurobiological authority as default operating system. Support integration and long-term sustainability, help user embody new neural patterns"
+        }
+      ],
+      "final_deliverables": [
+        "Personalized dopamine hijack map",
+        "craving decoder",
+        "trigger inventory",
+        "Craving diary with decoded meanings",
+        "unmet needs inventory",
+        "values clarification",
+        "Neural training protocol",
+        "daily practice schedule",
+        "progress tracking system",
+        "Sovereignty declaration",
+        "maintenance protocol",
+        "challenge navigation system",
+        "Dopamine hijack mapping",
+        "Craving decoding and urge surfing",
+        "Prefrontal cortex strengthening exercises",
+        "Reward system recalibration",
+        "Memory reconsolidation work",
+        "Trigger mastery protocols",
+        "Executive function recovery training",
+        "Neural pathway visualization and reinforcement"
+      ],
+      "best_suited_for": [
+        "Addiction recovery"
+      ]
+    },
+    {
+      "framework_name": "The Trauma Alchemy Transformation",
+      "core_mechanism": "Pain can be transformed into wisdom and purpose without claiming the trauma was necessary or 'worth it'. Growth through adversity is real, but so is the harm. Both truths can coexist.",
+      "description": "Converting pain into Post-Traumatic Wisdom\u2122 through meaning-making without minimizing suffering",
+      "therapeutic_basis": [
+        "Post-traumatic growth theory",
+        "meaning-making therapy",
+        "narrative therapy",
+        "existential psychology",
+        "acceptance and commitment therapy"
+      ],
+      "phases": [
+        {
+          "phase_name": "Pain Acknowledgment",
+          "ai_role": "Witness and validate pain without rushing to find meaning or growth. Hold space for grief and anger.",
+          "user_action": "Name and honor their suffering, allow themselves to feel the full weight of what happened",
+          "processing_instruction": "Guide the user through fully acknowledging and honoring suffering without minimization or silver-lining. Witness and validate pain without rushing to find meaning or growth. Hold space for grief and anger."
+        },
+        {
+          "phase_name": "Meaning Extraction",
+          "ai_role": "Guide meaning-making that honors both pain and growth. Help extract wisdom without gaslighting.",
+          "user_action": "Identify specific wisdom, insights, and capacities gained through surviving adversity",
+          "processing_instruction": "Guide the user through finding meaning in the response to trauma, not in the trauma itself. Guide meaning-making that honors both pain and growth. Help extract wisdom without gaslighting."
+        },
+        {
+          "phase_name": "Wisdom Integration",
+          "ai_role": "Help integrate wisdom into identity and daily life without making trauma central to identity",
+          "user_action": "Embody wisdom in choices, relationships, and self-concept",
+          "processing_instruction": "Guide the user through connecting extracted wisdom to values, identity, and life direction. Help integrate wisdom into identity and daily life without making trauma central to identity"
+        },
+        {
+          "phase_name": "Purpose Activation",
+          "ai_role": "Support translation of wisdom into service, legacy, and helping others without re-traumatization",
+          "user_action": "Share wisdom to help others, create meaning through contribution",
+          "processing_instruction": "Guide the user through using hard-won wisdom in service of meaningful contribution to others. Support translation of wisdom into service, legacy, and helping others without re-traumatization"
+        }
+      ],
+      "final_deliverables": [
+        "Pain acknowledgment statement",
+        "grief expression",
+        "validation of harm",
+        "Wisdom inventory",
+        "strength identification",
+        "perspective shifts documented",
+        "Integrated identity statement",
+        "wisdom-in-action plan",
+        "values alignment",
+        "Service plan",
+        "wisdom-sharing protocol",
+        "legacy vision",
+        "Pain-to-purpose bridging",
+        "Shadow integration work",
+        "Post-traumatic growth mapping",
+        "Meaning-making without gaslighting",
+        "Wisdom extraction protocols",
+        "Strength archaeology",
+        "Narrative reframing from victim to survivor to thriver",
+        "Gratitude without minimization"
+      ],
+      "best_suited_for": [
+        "Personal growth",
+        "Healing and recovery"
+      ]
+    },
+    {
+      "framework_name": "The Ritual Rebellion Builder",
+      "core_mechanism": "Rituals serve dual purposes: practical neurobiological restoration and symbolic acts of reclaiming sovereignty. They create structure, meaning, and physiological healing while representing conscious choice over compulsion.",
+      "description": "Creating neurobiologically-informed healing rituals that serve as acts of rebellion against addiction",
+      "therapeutic_basis": [
+        "Chronobiology",
+        "nutritional neuroscience",
+        "somatic psychology",
+        "ritual theory",
+        "behavioral activation",
+        "habit formation science"
+      ],
+      "phases": [
+        {
+          "phase_name": "Physiological Assessment",
+          "ai_role": "Guide comprehensive assessment of sleep, nutrition, stress response, movement, and circadian rhythms",
+          "user_action": "Map current physiological state and identify systems most disrupted by addiction",
+          "processing_instruction": "Guide the user through identifying disrupted biological systems that need restoration. Guide comprehensive assessment of sleep, nutrition, stress response, movement, and circadian rhythms"
+        },
+        {
+          "phase_name": "Ritual Design",
+          "ai_role": "Help design rituals grounded in neuroscience while incorporating personal symbolism and meaning",
+          "user_action": "Create specific ritual protocols with clear steps, timing, and symbolic elements",
+          "processing_instruction": "Guide the user through co-creating rituals that are both scientifically effective and personally meaningful. Help design rituals grounded in neuroscience while incorporating personal symbolism and meaning"
+        },
+        {
+          "phase_name": "Implementation Protocol",
+          "ai_role": "Support sustainable implementation planning, troubleshoot obstacles, build accountability",
+          "user_action": "Begin practicing rituals with tracking, adjust as needed, build consistency",
+          "processing_instruction": "Guide the user through realistic planning for sustainable ritual practice with accountability. Support sustainable implementation planning, troubleshoot obstacles, build accountability"
+        },
+        {
+          "phase_name": "Ritual Evolution",
+          "ai_role": "Guide adaptation and evolution of rituals based on experience and changing needs",
+          "user_action": "Refine rituals based on what works, deepen practices, add complexity as ready",
+          "processing_instruction": "Guide the user through refining and deepening practices over time as needs and capacity change. Guide adaptation and evolution of rituals based on experience and changing needs"
+        }
+      ],
+      "final_deliverables": [
+        "Physiological disruption map",
+        "priority restoration areas",
+        "baseline measurements",
+        "Detailed ritual protocols",
+        "scientific rationale",
+        "symbolic meaning",
+        "implementation plan",
+        "Implementation schedule",
+        "tracking system",
+        "obstacle solutions",
+        "accountability structure",
+        "Evolved ritual system",
+        "deepening practices",
+        "long-term sustainability plan",
+        "Sleep architecture optimization",
+        "Circadian rhythm restoration",
+        "Nutritional neuroscience protocols",
+        "Somatic anchoring practices",
+        "Morning sovereignty rituals",
+        "Evening integration practices",
+        "Stress response ritualization",
+        "Movement as medicine",
+        "Sacred routine creation"
+      ],
+      "best_suited_for": [
+        "Stress reduction"
+      ]
+    },
+    {
+      "framework_name": "The Mindful Presence Practice",
+      "core_mechanism": "Guided present-moment awareness exercises that cultivate non-judgmental observation of thoughts, emotions, and sensations",
+      "description": "This framework uses mindfulness-based techniques to help users develop present-moment awareness, reduce reactivity, and cultivate acceptance. The AI guides users through structured mindfulness practices and helps them integrate insights into daily life.",
+      "therapeutic_basis": [
+        "Mindfulness-Based Stress Reduction (MBSR)",
+        "Mindfulness-Based Cognitive Therapy (MBCT)",
+        "Present-Moment Awareness",
+        "Non-Judgmental Observation"
+      ],
+      "phases": [
+        {
+          "phase_name": "Grounding & Intention",
+          "ai_role": "Calm Guide",
+          "user_action": "Sets intention for mindfulness practice and current state",
+          "processing_instruction": "Help user settle into present moment and clarify what they want to explore or release through mindfulness"
+        },
+        {
+          "phase_name": "Guided Mindfulness Practice",
+          "ai_role": "Mindfulness Teacher",
+          "user_action": "Follows guided meditation or awareness exercise (5-15 minutes)",
+          "processing_instruction": "Guide user through specific mindfulness technique: breath awareness, body scan, thought observation, or emotion witnessing. Use gentle, present-focused language."
+        },
+        {
+          "phase_name": "Observation & Noticing",
+          "ai_role": "Curious Witness",
+          "user_action": "Shares observations about what arose during practice",
+          "processing_instruction": "Ask 3-5 questions to help user articulate what they noticed: thoughts, emotions, sensations, patterns, resistance, or insights"
+        },
+        {
+          "phase_name": "Integration & Application",
+          "ai_role": "Practical Coach",
+          "user_action": "Receives guidance on integrating mindfulness into daily life",
+          "processing_instruction": "Provide specific, actionable ways to bring this mindfulness practice into daily situations, especially those related to user's challenges"
+        }
+      ],
+      "final_deliverables": [
+        "Summary of mindfulness practice completed",
+        "Key observations and insights from practice",
+        "Patterns or themes that emerged",
+        "Daily mindfulness integration plan",
+        "Reminder for continued practice"
+      ],
+      "best_suited_for": [
+        "Anxiety and stress reduction",
+        "Emotional regulation",
+        "Breaking reactive patterns",
+        "Cultivating present-moment awareness",
+        "Reducing rumination"
+      ]
+    },
+    {
+      "framework_name": "The Compassionate Self-Relating",
+      "core_mechanism": "Systematic cultivation of self-compassion through guided exercises that transform self-criticism into self-kindness",
+      "description": "This framework draws from self-compassion research and loving-kindness practices to help users develop a kinder, more supportive relationship with themselves. The AI guides users through exercises that activate the self-compassion system and counter self-judgment.",
+      "therapeutic_basis": [
+        "Self-Compassion Theory (Kristin Neff)",
+        "Compassion-Focused Therapy (CFT)",
+        "Loving-Kindness Meditation",
+        "Common Humanity Recognition"
+      ],
+      "phases": [
+        {
+          "phase_name": "Self-Criticism Identification",
+          "ai_role": "Gentle Witness",
+          "user_action": "Identifies a situation where they're being self-critical",
+          "processing_instruction": "Help user articulate the self-critical voice, its tone, and its impact without judgment"
+        },
+        {
+          "phase_name": "Common Humanity Connection",
+          "ai_role": "Normalizing Guide",
+          "user_action": "Explores how their struggle is part of shared human experience",
+          "processing_instruction": "Guide user to recognize that their struggle, imperfection, or pain is part of being human, not a personal failing"
+        },
+        {
+          "phase_name": "Self-Compassion Practice",
+          "ai_role": "Compassionate Friend",
+          "user_action": "Engages in guided self-compassion exercise or loving-kindness practice",
+          "processing_instruction": "Lead user through specific self-compassion practice: self-compassion break, loving-kindness phrases, compassionate letter, or supportive touch"
+        },
+        {
+          "phase_name": "Compassionate Action Planning",
+          "ai_role": "Supportive Ally",
+          "user_action": "Identifies compassionate actions to take for themselves",
+          "processing_instruction": "Help user identify specific, compassionate actions they can take in response to their struggle, replacing self-criticism with self-care"
+        }
+      ],
+      "final_deliverables": [
+        "Self-critical pattern identified and externalized",
+        "Common humanity connection established",
+        "Personalized self-compassion phrases or practices",
+        "Compassionate action plan",
+        "Self-compassion reminder for difficult moments"
+      ],
+      "best_suited_for": [
+        "Self-criticism and shame",
+        "Perfectionism",
+        "Low self-worth",
+        "Harsh inner critic",
+        "Difficulty with self-care"
+      ]
+    },
+    {
+      "framework_name": "The Somatic Integration Journey",
+      "core_mechanism": "Body-based exploration that helps users access, process, and release emotions and trauma stored in the body",
+      "description": "This framework uses somatic psychology principles to help users connect with bodily sensations, emotions, and implicit memories. The AI guides users through body-awareness exercises that facilitate healing through the body-mind connection.",
+      "therapeutic_basis": [
+        "Somatic Experiencing (Peter Levine)",
+        "Body-Centered Psychotherapy",
+        "Polyvagal Theory",
+        "Trauma-Sensitive Yoga Principles"
+      ],
+      "phases": [
+        {
+          "phase_name": "Body Awareness Scan",
+          "ai_role": "Somatic Guide",
+          "user_action": "Scans body for sensations, tension, or emotional holding",
+          "processing_instruction": "Guide user through systematic body scan, helping them notice and describe physical sensations without trying to change them"
+        },
+        {
+          "phase_name": "Sensation Exploration",
+          "ai_role": "Curious Explorer",
+          "user_action": "Focuses on specific sensation or area, exploring its qualities",
+          "processing_instruction": "Help user stay with a sensation, describing its location, quality, intensity, and any associated emotions or memories. Use pendulation between sensation and safety."
+        },
+        {
+          "phase_name": "Emotional-Somatic Connection",
+          "ai_role": "Integrative Witness",
+          "user_action": "Explores connection between body sensations and emotions/experiences",
+          "processing_instruction": "Guide user to notice how emotions manifest in body, and how body sensations connect to emotional experiences or memories"
+        },
+        {
+          "phase_name": "Release & Integration",
+          "ai_role": "Grounding Anchor",
+          "user_action": "Allows natural release or movement, then grounds and integrates",
+          "processing_instruction": "Support any natural release (breath, movement, tears), then help user ground and integrate the experience with self-compassion"
+        }
+      ],
+      "final_deliverables": [
+        "Body awareness map with key sensations identified",
+        "Emotional-somatic connections discovered",
+        "Release or shift experienced (if any)",
+        "Grounding techniques for future use",
+        "Integration insights and next steps"
+      ],
+      "best_suited_for": [
+        "Trauma processing",
+        "Chronic tension or pain",
+        "Emotional numbness or disconnection",
+        "Anxiety held in the body",
+        "Accessing implicit memories"
+      ]
+    },
+    {
+      "framework_name": "The Behavioral Momentum Builder",
+      "core_mechanism": "Systematic approach to building positive behaviors through small, achievable actions that create momentum and habit formation",
+      "description": "This framework uses behavioral activation and habit formation principles to help users overcome inertia, build positive routines, and create sustainable change through incremental progress and reinforcement.",
+      "therapeutic_basis": [
+        "Behavioral Activation (BA)",
+        "Habit Formation Science",
+        "Implementation Intentions",
+        "Tiny Habits Method (BJ Fogg)"
+      ],
+      "phases": [
+        {
+          "phase_name": "Behavior Selection & Motivation",
+          "ai_role": "Motivational Interviewer",
+          "user_action": "Identifies desired behavior and explores motivation",
+          "processing_instruction": "Help user select a specific, meaningful behavior to build, and explore their intrinsic motivation for change"
+        },
+        {
+          "phase_name": "Barrier Identification & Problem-Solving",
+          "ai_role": "Strategic Planner",
+          "user_action": "Identifies obstacles and creates solutions",
+          "processing_instruction": "Guide user to anticipate barriers (internal and external) and develop specific if-then plans to overcome them"
+        },
+        {
+          "phase_name": "Tiny Habit Design",
+          "ai_role": "Habit Architect",
+          "user_action": "Designs smallest possible version of behavior with clear trigger",
+          "processing_instruction": "Help user create a tiny, achievable version of the behavior, identify a clear trigger/anchor, and plan immediate celebration"
+        },
+        {
+          "phase_name": "Momentum & Scaling Plan",
+          "ai_role": "Progress Coach",
+          "user_action": "Creates plan for building momentum and gradually scaling behavior",
+          "processing_instruction": "Develop a progressive plan for building on initial success, tracking progress, and gradually increasing behavior difficulty or frequency"
+        }
+      ],
+      "final_deliverables": [
+        "Specific behavior goal with clear motivation",
+        "Barrier-solution map with if-then plans",
+        "Tiny habit formula: After [trigger], I will [tiny behavior], then I will [celebration]",
+        "Progressive scaling plan for building momentum",
+        "Tracking method and success metrics"
+      ],
+      "best_suited_for": [
+        "Depression and low motivation",
+        "Procrastination",
+        "Building healthy habits",
+        "Overcoming inertia",
+        "Creating sustainable routines"
+      ]
+    }
+  ]
+}
