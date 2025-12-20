@@ -17,6 +17,7 @@ export function Nav() {
 
   const navLinks = [
     { href: '/chat', label: 'Chat', enabled: true },
+    { href: '/journal', label: 'Journal', enabled: true },
     { href: '/exercises', label: 'Exercises', enabled: true },
   ]
 

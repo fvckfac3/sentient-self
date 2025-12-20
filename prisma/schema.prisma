@@ -134,11 +134,20 @@ model ExerciseCompletion {
 model JournalEntry {
   id        String   @id @default(uuid())
   userId    String
+  date      DateTime @default(now())
+  mood      Int?     // 1-10 scale
+  energy    Int?     // 1-10 scale
   content   String   @db.Text
-  insights  String?  @db.Text
+  gratitude String?  @db.Text
+  goals     String?  @db.Text
+  insights  String?  @db.Text // AI-generated insights (premium feature)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, date])
+  @@index([userId, date])
 }
 
 model Institution {
