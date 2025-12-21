@@ -6,13 +6,6 @@ import { prisma } from '@/lib/prisma'
 
 export const runtime = 'nodejs'
 
-// Disable body parsing for webhook signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
-
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: NextRequest) {

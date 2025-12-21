@@ -85,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         subscriptionTier: state.subscriptionTier 
       }),
+      skipHydration: typeof window === 'undefined',
     }
   )
 )

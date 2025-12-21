@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { message, conversationId } = await request.json()
+    const { message, conversationId, exerciseId, modelId } = await request.json()
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
@@ -63,6 +63,27 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Load exercise and framework if exerciseId is provided
+    let exerciseContext: { exercise: any; framework: any } | undefined = undefined
+    if (exerciseId) {
+      const exercise = await prisma.exercise.findUnique({
+        where: { id: exerciseId },
+      })
+
+      if (exercise) {
+        const framework = await prisma.framework.findUnique({
+          where: { id: exercise.framework },
+        })
+
+        if (framework) {
+          exerciseContext = {
+            exercise,
+            framework
+          }
+        }
+      }
+    }
+
     // Prepare AI controller
     const recentMessages = conversation.messages.slice(-10).map(msg => ({
       role: msg.role.toLowerCase(),
@@ -73,7 +94,9 @@ export async function POST(request: NextRequest) {
       user,
       conversationId: conversation.id,
       currentState: conversation.state,
-      recentMessages
+      recentMessages,
+      exerciseContext,
+      modelId
     })
 
     // Generate AI response

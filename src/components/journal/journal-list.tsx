@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
 
 interface JournalEntry {
   id: string
@@ -12,6 +14,7 @@ interface JournalEntry {
   content: string
   gratitude: string | null
   goals: string | null
+  insights: string | null
   createdAt: string
   updatedAt: string
 }
@@ -42,13 +45,19 @@ const getEnergyLabel = (energy: number | null): string => {
 }
 
 export function JournalList({ refreshTrigger }: JournalListProps) {
+  const { data: session } = useSession()
+  const { toast } = useToast()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [insightsLoading, setInsightsLoading] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState({
     startDate: '',
     endDate: ''
   })
+
+  const subscriptionTier = session?.user?.subscriptionTier || 'FREE'
+  const isPremium = subscriptionTier === 'PREMIUM' || subscriptionTier === 'INSTITUTION'
 
   const fetchEntries = async () => {
     try {
@@ -81,6 +90,42 @@ export function JournalList({ refreshTrigger }: JournalListProps) {
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id)
+  }
+
+  const generateInsights = async (entryId: string) => {
+    setInsightsLoading(entryId)
+    try {
+      const response = await fetch(`/api/journal/${entryId}/insights`, {
+        method: 'POST',
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        // Update entry in state with new insights
+        setEntries(entries.map(e => 
+          e.id === entryId ? { ...e, insights: data.insights } : e
+        ))
+        toast({
+          title: '✨ Insights generated!',
+          description: 'AI analysis has been added to your journal entry.',
+        })
+      } else {
+        const error = await response.json()
+        toast({
+          title: 'Error',
+          description: error.error || 'Failed to generate insights',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong while generating insights',
+        variant: 'destructive'
+      })
+    } finally {
+      setInsightsLoading(null)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -278,6 +323,60 @@ export function JournalList({ refreshTrigger }: JournalListProps) {
                               <p className="whitespace-pre-wrap text-foreground leading-relaxed">
                                 {entry.goals}
                               </p>
+                            </div>
+                          )}
+
+                          {/* AI Insights Section */}
+                          {entry.insights ? (
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/10 border-l-4 border-purple-500 rounded-lg">
+                              <div className="flex items-start gap-2">
+                                <span className="text-2xl flex-shrink-0">🤖</span>
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+                                    AI Insights
+                                  </h4>
+                                  <p className="text-purple-800 dark:text-purple-200 leading-relaxed">
+                                    {entry.insights}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  if (isPremium) {
+                                    generateInsights(entry.id)
+                                  }
+                                }}
+                                disabled={insightsLoading === entry.id || !isPremium}
+                                className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
+                                  isPremium
+                                    ? 'bg-purple-600 text-white hover:bg-purple-700 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100'
+                                    : 'bg-purple-100 text-purple-900 cursor-not-allowed'
+                                }`}
+                              >
+                                {insightsLoading === entry.id ? (
+                                  <span className="flex items-center justify-center gap-2">
+                                    <span className="animate-spin">⏳</span>
+                                    Generating insights...
+                                  </span>
+                                ) : isPremium ? (
+                                  <span className="flex items-center justify-center gap-2">
+                                    ✨ Generate AI Insights
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center justify-center gap-2">
+                                    ✨ Upgrade for AI Insights
+                                  </span>
+                                )}
+                              </button>
+                              {!isPremium && (
+                                <p className="text-xs text-center text-muted-foreground">
+                                  Upgrade to Premium to unlock personalized AI insights on your journal entries
+                                </p>
+                              )}
                             </div>
                           )}
                           

@@ -36,6 +36,7 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
   const [loading, setLoading] = useState(false)
   const [existingEntryId, setExistingEntryId] = useState<string | null>(null)
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
+  const [autoGenerateInsights, setAutoGenerateInsights] = useState(false)
   
   const [formData, setFormData] = useState({
     content: '',
@@ -48,6 +49,9 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
   const MAX_CONTENT_LENGTH = 5000
   const MAX_GRATITUDE_LENGTH = 1000
   const MAX_GOALS_LENGTH = 1000
+
+  const subscriptionTier = session?.user?.subscriptionTier || 'FREE'
+  const isPremium = subscriptionTier === 'PREMIUM' || subscriptionTier === 'INSTITUTION'
 
   // Fetch today's entry on mount (if exists)
   useEffect(() => {
@@ -103,13 +107,41 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
       const data = await response.json()
 
       if (response.ok) {
-        setExistingEntryId(data.entry.id)
+        const savedEntryId = data.entry.id
+        setExistingEntryId(savedEntryId)
         setShowSuccessAnimation(true)
         setTimeout(() => setShowSuccessAnimation(false), 2000)
-        toast({
-          title: existingEntryId ? '✓ Entry updated!' : '✓ Entry saved!',
-          description: 'Your journal entry has been saved successfully.',
-        })
+        
+        // Auto-generate insights if enabled and user is premium
+        if (autoGenerateInsights && isPremium) {
+          try {
+            const insightsResponse = await fetch(`/api/journal/${savedEntryId}/insights`, {
+              method: 'POST',
+            })
+            if (insightsResponse.ok) {
+              toast({
+                title: existingEntryId ? '✓ Entry updated!' : '✓ Entry saved!',
+                description: 'Your journal entry has been saved and AI insights generated.',
+              })
+            } else {
+              toast({
+                title: existingEntryId ? '✓ Entry updated!' : '✓ Entry saved!',
+                description: 'Entry saved, but insights generation failed.',
+              })
+            }
+          } catch (error) {
+            toast({
+              title: existingEntryId ? '✓ Entry updated!' : '✓ Entry saved!',
+              description: 'Entry saved successfully.',
+            })
+          }
+        } else {
+          toast({
+            title: existingEntryId ? '✓ Entry updated!' : '✓ Entry saved!',
+            description: 'Your journal entry has been saved successfully.',
+          })
+        }
+        
         onSave?.()
       } else {
         toast({
@@ -280,6 +312,23 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
             />
           </div>
 
+          {/* Auto-generate Insights Checkbox (Premium only) */}
+          {isPremium && (
+            <div className="flex items-center space-x-2 p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+              <input
+                type="checkbox"
+                id="autoInsights"
+                checked={autoGenerateInsights}
+                onChange={(e) => setAutoGenerateInsights(e.target.checked)}
+                className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+              />
+              <label htmlFor="autoInsights" className="text-sm font-medium flex items-center gap-2 cursor-pointer">
+                <span>🤖</span>
+                <span>Generate AI insights automatically</span>
+              </label>
+            </div>
+          )}
+
           {/* Submit Button */}
           <Button
             type="submit"
@@ -289,7 +338,7 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin">⏳</span>
-                Saving...
+                {autoGenerateInsights && isPremium ? 'Saving & generating insights...' : 'Saving...'}
               </span>
             ) : (
               <span className="flex items-center gap-2">

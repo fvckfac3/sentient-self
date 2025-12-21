@@ -99,7 +99,8 @@ export const useConversationStore = create<ConversationStore>()(
         // Only persist certain fields, not isLoading
         currentConversation: state.currentConversation,
         state: state.state
-      })
+      }),
+      skipHydration: typeof window === 'undefined',
     }
   )
 )

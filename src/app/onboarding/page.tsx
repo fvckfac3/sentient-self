@@ -15,6 +15,9 @@ import { ConsentStep } from '@/components/onboarding/consent-step'
 import { AIHandoffStep } from '@/components/onboarding/ai-handoff-step'
 import { UserBaselineProfile } from '@/types'
 
+// Disable static generation for this page (requires auth)
+export const dynamic = 'force-dynamic'
+
 const TOTAL_STEPS = 8
 
 export default function OnboardingPage() {

@@ -48,6 +48,7 @@ model User {
   subscriptionTier SubscriptionTier  @default(FREE)
   institutionId    String?
   onboardingDone   Boolean           @default(false)
+  preferredModel   String            @default("deepseek-chat")
   
   // Stripe billing fields
   stripeCustomerId     String?       @unique
@@ -108,16 +109,37 @@ model Message {
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
 
+model Framework {
+  id               String   @id // e.g., "trauma-alchemy-transformation"
+  name             String   // e.g., "The Trauma Alchemy Transformation"
+  coreMechanism    String   @db.Text
+  description      String   @db.Text
+  therapeuticBasis Json     // Array of strings
+  phases           Json     // Array of phase objects
+  deliverables     Json     // Array of deliverable strings
+  bestSuitedFor    Json     // Array of strings
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  exercises        Exercise[] @relation("FrameworkExercises")
+  
+  @@index([id])
+}
+
 model Exercise {
   id        String @id
   title     String
-  framework String
+  framework String // Foreign key to Framework.id
   topic     String?
   aspect    String
   aiPrompt  String @db.Text
   
-  completions   ExerciseCompletion[]
-  declinations  ExerciseDeclination[]
+  frameworkData    Framework @relation("FrameworkExercises", fields: [framework], references: [id], onDelete: Cascade)
+  completions      ExerciseCompletion[]
+  declinations     ExerciseDeclination[]
+  
+  @@index([framework])
+  @@index([topic])
 }
 
 model ExerciseCompletion {

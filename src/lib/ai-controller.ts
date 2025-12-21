@@ -1,13 +1,19 @@
 import { ConversationState, Exercise, UserWithProfile } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { SYSTEM_PROMPT_V3 } from '@/lib/system-prompt'
-import { getAIService, type AIMessage } from '@/lib/ai'
+import { getModel, getDefaultModelForTier, type ModelId } from '@/lib/models'
+import { generateText } from 'ai'
 
 export interface AIControllerConfig {
   user: UserWithProfile
   conversationId: string
   currentState: ConversationState
   recentMessages: Array<{ role: string; content: string }>
+  exerciseContext?: {
+    exercise: any
+    framework: any
+  }
+  modelId?: ModelId
 }
 
 export interface AIResponse {
@@ -27,12 +33,20 @@ export class AIController {
   private conversationId: string
   private currentState: ConversationState
   private recentMessages: Array<{ role: string; content: string }>
+  private exerciseContext?: { exercise: any; framework: any }
+  private modelId: ModelId
 
   constructor(config: AIControllerConfig) {
     this.user = config.user
     this.conversationId = config.conversationId
     this.currentState = config.currentState
     this.recentMessages = config.recentMessages
+    this.exerciseContext = config.exerciseContext
+    
+    // Use provided modelId or fall back to user's preferred model or tier default
+    this.modelId = config.modelId || 
+                   (this.user.preferredModel as ModelId) || 
+                   getDefaultModelForTier(this.user.subscriptionTier as any)
   }
 
   async generateResponse(userMessage: string): Promise<AIResponse> {
@@ -148,6 +162,60 @@ Would you like me to help you find local crisis resources, or is there someone y
   private async buildAIContext(): Promise<string> {
     let context = SYSTEM_PROMPT_V3
 
+    // Add exercise and framework context if in exercise facilitation mode
+    if (this.exerciseContext) {
+      const { exercise, framework } = this.exerciseContext
+      
+      // Format framework phases for AI guidance
+      const phases = (framework.phases as any[]).map((p: any, idx: number) => 
+        `Phase ${idx + 1}: ${p.phase_name || p.name}
+   - User Action: ${p.user_action || p.description || 'Engage with the phase content'}
+   - AI Role: ${p.ai_role || 'Guide the user through this phase'}
+   - Processing: ${p.processing_instruction || p.description || 'Support the user\'s exploration'}`
+      ).join('\n\n')
+
+      context += `\n\n═══════════════════════════════════════════════════════
+EXERCISE FACILITATION MODE - FRAMEWORK-GUIDED SESSION
+═══════════════════════════════════════════════════════
+
+You are conducting the exercise: "${exercise.title}"
+
+EXERCISE FOCUS:
+${exercise.aspect}
+
+FRAMEWORK METHODOLOGY: ${framework.name}
+${framework.description}
+
+CORE MECHANISM:
+${framework.coreMechanism}
+
+THERAPEUTIC BASIS:
+${(framework.therapeuticBasis as string[]).join(', ')}
+
+FRAMEWORK PHASES TO GUIDE USER THROUGH:
+${phases}
+
+EXERCISE-SPECIFIC GUIDANCE:
+${exercise.aiPrompt}
+
+EXPECTED DELIVERABLES (by end of session):
+${(framework.deliverables as string[]).slice(0, 5).join('\n')}
+
+FACILITATION APPROACH:
+1. Follow the exercise content as your "what" (what you're helping the user work through)
+2. Use the framework methodology as your "how" (how to guide them through the process)
+3. Move through phases naturally based on where the user is - don't force rigid structure
+4. Adapt to the user's emotional/mental state at each step
+5. Ask thoughtful, open-ended questions that help them explore
+6. Reflect back what you hear to show deep understanding
+7. Identify patterns and insights as they emerge
+8. Guide toward actionable next steps aligned with the framework
+
+Begin by meeting the user where they are with this issue. Use the framework phases as a guide, not a script.
+
+═══════════════════════════════════════════════════════`
+    }
+
     // Add user baseline profile if available
     if (this.user.baselineProfile) {
       context += `\n\nUser Baseline Profile:
@@ -232,45 +300,43 @@ Would you like me to help you find local crisis resources, or is there someone y
     statePrompt: string
   ): Promise<{ content: string; newState: ConversationState }> {
     try {
-      const aiService = getAIService()
+      // Get the AI model using Vercel AI SDK
+      const model = getModel(this.modelId)
 
-      // Build messages array for AI
-      const messages: AIMessage[] = [
-        {
-          role: 'system',
-          content: `${systemContext}\n\n[Current State Instructions]: ${statePrompt}\n\n[Response Format]:\nRespond naturally as a compassionate therapeutic guide. Based on the conversation, determine if you should:\n- Stay in the current state: ${this.currentState}\n- Transition to SUPPORTIVE_PROCESSING if the user shares something emotionally significant\n- Transition to CONVERSATIONAL_DISCOVERY if exploring topics\n\nAt the end of your response, on a new line, include: [STATE: <state_name>] to indicate the appropriate next state.`
-        },
-        ...this.recentMessages.slice(-8).map(msg => ({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content
-        })),
-        { role: 'user', content: userMessage }
-      ]
+      // Build system prompt
+      const systemPrompt = `${systemContext}\n\n[Current State Instructions]: ${statePrompt}\n\nRespond naturally as a compassionate therapeutic guide.`
 
-      const response = await aiService.complete(messages, {
-        temperature: 0.7,
-        maxTokens: 800
+      // Build messages for Vercel AI SDK
+      // Exclude the last message (current user message) since we'll add it separately
+      const messages = this.recentMessages.slice(0, -1).slice(-8).map(msg => ({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content
+      }))
+
+      // Generate response using Vercel AI SDK with dynamic model
+      const { text } = await generateText({
+        model,
+        system: systemPrompt,
+        messages: [
+          ...messages,
+          { role: 'user' as const, content: userMessage }
+        ],
+        temperature: 0.8,
       })
 
-      // Parse the response for state transition
-      const stateMatch = response.content.match(/\[STATE:\s*([A-Z_]+)\]/i)
-      let newState: ConversationState = this.currentState
-      let content = response.content
-
-      if (stateMatch) {
-        const parsedState = stateMatch[1].toUpperCase() as ConversationState
-        const validStates: ConversationState[] = [
-          'INIT', 'CONVERSATIONAL_DISCOVERY', 'SUPPORTIVE_PROCESSING',
-          'EXERCISE_SUGGESTION', 'EXERCISE_FACILITATION', 'POST_EXERCISE_INTEGRATION', 'CRISIS_MODE'
-        ]
-        if (validStates.includes(parsedState)) {
-          newState = parsedState
+      // Simple state detection - AI stays in current state unless explicitly transitioning
+      let newState = this.currentState
+      
+      // Basic heuristic for state transitions
+      if (this.currentState === 'CONVERSATIONAL_DISCOVERY') {
+        if (text.toLowerCase().includes('i hear') || 
+            text.toLowerCase().includes('that sounds') ||
+            text.toLowerCase().includes('it seems like')) {
+          newState = 'SUPPORTIVE_PROCESSING'
         }
-        // Remove state marker from visible response
-        content = content.replace(/\[STATE:\s*[A-Z_]+\]/i, '').trim()
       }
 
-      return { content, newState }
+      return { content: text, newState }
     } catch (error) {
       console.error('AI Service call failed:', error)
       // Fallback to basic response if API fails
