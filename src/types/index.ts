@@ -32,6 +32,7 @@ export interface UserWithProfile extends User {
 export interface ConversationWithMessages extends Omit<Conversation, 'state'> {
   messages: Message[]
   state: ConversationState
+  // Gate validation fields are inherited from Conversation model
 }
 
 // AI System Types

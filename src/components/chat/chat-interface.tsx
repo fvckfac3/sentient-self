@@ -88,7 +88,22 @@ export function ChatInterface() {
           userId: user!.id,
           state: data.state,
           createdAt: new Date(),
-          messages: []
+          messages: [],
+          // Gate validation fields (defaults)
+          gateCondition1_challengeArticulated: false,
+          gateCondition2_aiReflectedAccurately: false,
+          gateCondition3_userEmotionallyRegulated: true,
+          gateCondition4_structureExplained: false,
+          gateCondition5_noRecentDecline: true,
+          lastDeclinedAt: null,
+          // Exercise facilitation fields (defaults)
+          activeExerciseId: null,
+          activeFrameworkId: null,
+          currentPhaseIndex: 0,
+          exerciseStartedAt: null,
+          exerciseCompletedAt: null,
+          exerciseReflection: null,
+          exercisesCompleted: 0
         }
         setCurrentConversation(newConversation)
       }

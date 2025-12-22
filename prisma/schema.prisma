@@ -95,6 +95,23 @@ model Conversation {
   state     ConversationState @default(CONVERSATIONAL_DISCOVERY)
   createdAt DateTime          @default(now())
   
+  // Gate validation tracking
+  gateCondition1_challengeArticulated Boolean @default(false)
+  gateCondition2_aiReflectedAccurately Boolean @default(false)
+  gateCondition3_userEmotionallyRegulated Boolean @default(true) // Default true, AI can override
+  gateCondition4_structureExplained Boolean @default(false)
+  gateCondition5_noRecentDecline Boolean @default(true) // Default true, set false on decline
+  lastDeclinedAt DateTime?
+  
+  // Exercise facilitation tracking
+  activeExerciseId       String?
+  activeFrameworkId      String?
+  currentPhaseIndex      Int        @default(0)
+  exerciseStartedAt      DateTime?
+  exerciseCompletedAt    DateTime?
+  exerciseReflection     String?    @db.Text
+  exercisesCompleted     Int        @default(0)
+  
   messages  Message[]
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
