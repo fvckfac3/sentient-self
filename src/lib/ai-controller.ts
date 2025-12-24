@@ -25,6 +25,7 @@ import {
   detectReflection,
   detectExerciseAcceptance
 } from './exercise-facilitator'
+import { detectCrisis, getCrisisResponse } from './crisis-detector'
 
 export interface AIControllerConfig {
   user: UserWithProfile
@@ -43,6 +44,7 @@ export interface AIResponse {
   newState: ConversationState
   suggestedExercises?: Exercise[]
   crisisDetected?: boolean
+  crisisSeverity?: 'none' | 'low' | 'medium' | 'high' | 'critical'
   metadata?: {
     exerciseGatePassed?: boolean
     crisisIndicators?: string[]
@@ -75,10 +77,51 @@ export class AIController {
     // Add user message to context
     this.recentMessages.push({ role: 'user', content: userMessage })
 
-    // Step 0: Reset decline flag if enough time has passed
+    // Step 0: CRISIS DETECTION (HIGHEST PRIORITY)
+    const crisisCheck = detectCrisis(userMessage)
+    
+    if (crisisCheck.isCrisis) {
+      console.log('🚨 CRISIS DETECTED:', {
+        severity: crisisCheck.severity,
+        triggers: crisisCheck.triggers,
+        action: crisisCheck.recommendedAction
+      })
+      
+      // Update conversation state to CRISIS_MODE
+      await prisma.conversation.update({
+        where: { id: this.conversationId },
+        data: { state: 'CRISIS_MODE' }
+      })
+      
+      // Return crisis response immediately - bypass all other processing
+      return {
+        content: getCrisisResponse(crisisCheck.severity),
+        newState: 'CRISIS_MODE',
+        crisisDetected: true,
+        crisisSeverity: crisisCheck.severity,
+        metadata: {
+          crisisIndicators: crisisCheck.triggers,
+          stateTransitionReason: 'Crisis language detected - immediate safety response'
+        }
+      }
+    }
+    
+    // Log safety check for medium/low severity
+    if (crisisCheck.severity === 'medium' || crisisCheck.severity === 'low') {
+      console.log('⚠️ Safety check triggered:', {
+        severity: crisisCheck.severity,
+        triggers: crisisCheck.triggers,
+        action: crisisCheck.recommendedAction
+      })
+      
+      // For medium/low, include safety awareness in AI response but don't block conversation
+      // This will be handled naturally by the AI with appropriate empathy
+    }
+
+    // Step 1: Reset decline flag if enough time has passed
     await maybeResetDeclineFlag(this.conversationId)
 
-    // Step 1: Check for exercise exit command
+    // Step 2: Check for exercise exit command
     if (detectExerciseExit(userMessage)) {
       const activeExercise = await getActiveExercise(this.conversationId)
       if (activeExercise) {
@@ -92,13 +135,13 @@ export class AIController {
       }
     }
 
-    // Step 2: Check for decline in user message
+    // Step 3: Check for decline in user message
     if (detectDeclineInMessage(userMessage)) {
       console.log('🚫 User declined exercise suggestion')
       await recordExerciseDecline(this.conversationId)
     }
 
-    // Step 3: Check if user is accepting an exercise suggestion
+    // Step 4: Check if user is accepting an exercise suggestion
     if (this.currentState === 'EXERCISE_SUGGESTION' && detectExerciseAcceptance(userMessage)) {
       console.log('✅ User accepted exercise suggestion')
       
@@ -119,7 +162,7 @@ export class AIController {
       }
     }
 
-    // Step 4: Check for active exercise
+    // Step 5: Check for active exercise
     const activeExercise = await getActiveExercise(this.conversationId)
     
     if (activeExercise) {
@@ -141,14 +184,8 @@ export class AIController {
       return await this.generateExerciseResponse(userMessage, activeExercise)
     }
 
-    // Step 5: Update gate conditions based on user message
+    // Step 6: Update gate conditions based on user message
     await this.updateGateConditionsFromMessage(userMessage)
-
-    // Step 6: Crisis Detection Middleware (highest priority)
-    const crisisDetected = await this.detectCrisis(userMessage)
-    if (crisisDetected) {
-      return this.handleCrisisMode()
-    }
 
     // Step 7: State Machine Enforcement
     const validTransitions = this.getValidTransitions()
@@ -273,40 +310,6 @@ export class AIController {
     }
   }
 
-  private async detectCrisis(message: string): Promise<boolean> {
-    // Crisis keywords and patterns (simplified - in production would use more sophisticated NLP)
-    const crisisPatterns = [
-      /\b(suicide|kill myself|end it all|not worth living)\b/i,
-      /\b(hurt myself|self harm|cut myself)\b/i,
-      /\b(want to die|wish I was dead)\b/i,
-      /\b(can't go on|give up|no hope)\b/i,
-      /\b(planning to|going to hurt|going to end)\b/i
-    ]
-
-    return crisisPatterns.some(pattern => pattern.test(message))
-  }
-
-  private handleCrisisMode(): AIResponse {
-    const crisisResponse = `I'm really concerned about what you've shared. Your safety is the most important thing right here, right now.
-
-**If you're in immediate danger, please:**
-• Call 911 for emergencies
-• Call or text 988 for the Suicide & Crisis Lifeline (available 24/7)
-• Reach out to a trusted person or mental health professional
-
-I want you to know that these feelings can change, and you don't have to face this alone. There are people trained to help you through this moment.
-
-Would you like me to help you find local crisis resources, or is there someone you can reach out to right now?`
-
-    return {
-      content: crisisResponse,
-      newState: 'CRISIS_MODE',
-      crisisDetected: true,
-      metadata: {
-        crisisIndicators: ['Crisis language detected in user message']
-      }
-    }
-  }
 
   private getValidTransitions(): ConversationState[] {
     switch (this.currentState) {

@@ -7,19 +7,25 @@ import { useConversationStore } from '@/store/conversation'
 import { useAuthStore } from '@/store/auth'
 import { ChatInterface } from '@/components/chat/chat-interface'
 import { CrisisScreen } from '@/components/chat/crisis-screen'
-import { ExerciseCard } from '@/components/exercises/exercise-card'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { AnimatedBackground } from '@/components/chat/animated-background'
 import { Nav } from '@/components/layout/nav'
 
 export default function ChatPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const { user, hasOnboardingCompleted } = useAuthStore()
-  const { crisisMode, state } = useConversationStore()
+  const { crisisMode } = useConversationStore()
   const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent SSR/hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (!mounted || status === 'loading') return
 
     if (!session) {
       router.push('/auth/signin')
@@ -32,7 +38,7 @@ export default function ChatPage() {
     }
 
     setIsLoading(false)
-  }, [session, status, hasOnboardingCompleted, router])
+  }, [mounted, session, status, hasOnboardingCompleted, router])
 
   if (isLoading) {
     return (
@@ -47,35 +53,10 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Navigation */}
+    <div className="flex flex-col h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <AnimatedBackground />
       <Nav />
-      
-      {/* Main Content */}
-      <div className="flex-1 flex">
-        <div className="container mx-auto h-full flex">
-          {/* Main Chat Interface */}
-          <div className="flex-1 flex flex-col">
-            <ChatInterface />
-          </div>
-
-          {/* Sidebar - Exercise suggestions, analytics, etc. */}
-          <div className="w-80 border-l border-border p-4 hidden lg:block">
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Session Info</h3>
-                <div className="text-sm text-muted-foreground">
-                  <p>State: {state}</p>
-                  <p>User: {user?.email}</p>
-                  <p>Tier: {user?.subscriptionTier}</p>
-                </div>
-              </div>
-              
-              {/* Exercise suggestions will appear here when available */}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChatInterface />
     </div>
   )
 }

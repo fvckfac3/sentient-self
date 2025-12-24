@@ -3,14 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { useConversationStore } from '@/store/conversation'
 import { useAuthStore } from '@/store/auth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { MessageBubble } from './message-bubble'
-import { ExerciseSuggestions } from '../exercises/exercise-suggestions'
+import { ChatMessage } from './chat-message'
+import { ChatInput } from './chat-input'
+import { ChatHeader } from './chat-header'
+import { TypingIndicator } from './typing-indicator'
+import { ExerciseCardAnimated } from './exercise-card-animated'
 import { ModelSelector } from './model-selector'
-import { Send, Loader2 } from 'lucide-react'
+import { ExerciseProgress } from './exercise-progress'
+import { CrisisBanner } from './crisis-banner'
 import { ConversationWithMessages } from '@/types'
 import { type ModelId } from '@/lib/models'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function ChatInterface() {
   const [message, setMessage] = useState('')
@@ -18,6 +21,7 @@ export function ChatInterface() {
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null)
   const [exerciseData, setExerciseData] = useState<any>(null)
   const [selectedModel, setSelectedModel] = useState<ModelId>('deepseek-chat')
+  const [showCrisisBanner, setShowCrisisBanner] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -121,8 +125,9 @@ export function ChatInterface() {
 
       // Handle crisis detection
       if (data.crisisDetected) {
-        // Crisis mode will be handled by the state update
-        console.log('Crisis detected, switching to crisis mode')
+        console.log('🚨 Crisis detected, showing crisis banner')
+        setShowCrisisBanner(true)
+        setState('CRISIS_MODE')
       }
 
     } catch (error) {
@@ -173,126 +178,141 @@ export function ChatInterface() {
     setTimeout(() => sendMessage(), 100)
   }
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b border-border p-4 bg-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-semibold text-foreground">Sentient Self Guide</h1>
-            <p className="text-sm text-muted-foreground">
-              {state === 'CRISIS_MODE' ? 'Crisis Support Mode' : 
-               state === 'EXERCISE_FACILITATION' ? 'Exercise in Progress' :
-               'Therapeutic Conversation'}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {state !== 'CONVERSATIONAL_DISCOVERY' && (
-              <div className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md">
-                {state.replace('_', ' ').toLowerCase()}
-              </div>
-            )}
-            <ModelSelector 
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-            />
-          </div>
-        </div>
+  const handleStartExercise = async (exerciseId: string) => {
+    try {
+      const res = await fetch(`/api/exercises/${exerciseId}`)
+      const data = await res.json()
+      
+      if (res.ok) {
+        setActiveExerciseId(exerciseId)
+        setExerciseData(data)
+        setState('EXERCISE_FACILITATION')
+        setSuggestedExercises([])
         
-        {/* Active Exercise Context */}
-        {exerciseData && activeExerciseId && (
-          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h2 className="text-sm font-semibold text-gray-900">
-                  {exerciseData.exercise.title}
-                </h2>
-                <p className="text-xs text-gray-600 mt-1">
-                  {exerciseData.exercise.aspect}
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                  {exerciseData.framework.name}
-                </span>
-                <button
-                  onClick={() => {
-                    setActiveExerciseId(null)
-                    setExerciseData(null)
-                    setState('CONVERSATIONAL_DISCOVERY')
-                  }}
-                  className="ml-2 text-xs text-gray-500 hover:text-gray-700 underline"
-                >
-                  End Exercise
-                </button>
-              </div>
+        // Send acceptance message to start exercise
+        setMessage("Yes, I'd like to try this exercise.")
+        setTimeout(() => sendMessage(), 100)
+      }
+    } catch (error) {
+      console.error('Error loading exercise:', error)
+    }
+  }
+
+  const handleCancelExercise = async () => {
+    if (!currentConversation?.id) return
+    
+    try {
+      await fetch(`/api/exercises/active?conversationId=${currentConversation.id}`, {
+        method: 'DELETE'
+      })
+      
+      setActiveExerciseId(null)
+      setExerciseData(null)
+      setState('CONVERSATIONAL_DISCOVERY')
+    } catch (error) {
+      console.error('Error canceling exercise:', error)
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen">
+      {/* Crisis Banner - Shows at top when crisis detected */}
+      <CrisisBanner 
+        isVisible={showCrisisBanner || state === 'CRISIS_MODE'} 
+        onDismiss={() => setShowCrisisBanner(false)}
+      />
+
+      {/* Header */}
+      <ChatHeader
+        modelName={selectedModel === 'claude-3-5-sonnet' ? 'Claude 3.5 Sonnet' : 
+                   selectedModel === 'gpt-4o' ? 'GPT-4o' : 
+                   'DeepSeek Chat'}
+        userName={user?.email?.split('@')[0]}
+        state={state}
+        onSettingsClick={() => {
+          // TODO: Open settings modal
+          console.log('Settings clicked')
+        }}
+      />
+
+      {/* Exercise Progress Header */}
+      <AnimatePresence>
+        {exerciseData && activeExerciseId && state === 'EXERCISE_FACILITATION' && (
+          <ExerciseProgress
+            exerciseTitle={exerciseData.exercise.title}
+            frameworkName={exerciseData.framework.name}
+            currentPhase={currentConversation?.currentPhaseIndex || 0}
+            totalPhases={exerciseData.framework.phases?.length || 1}
+            phaseName={exerciseData.framework.phases?.[currentConversation?.currentPhaseIndex || 0]?.phase_name || 'Processing'}
+            onCancel={handleCancelExercise}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-4 space-y-1">
+          {!currentConversation?.messages?.length && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center text-muted-foreground py-8"
+            >
+              <h2 className="text-lg font-medium mb-2">Welcome to Sentient Self</h2>
+              <p className="mb-4">I'm here to listen and support you. What would you like to talk about today?</p>
+            </motion.div>
+          )}
+
+          <AnimatePresence mode="popLayout">
+            {currentConversation?.messages?.map((msg, index) => (
+              <ChatMessage
+                key={msg.id || index}
+                message={{
+                  id: msg.id,
+                  role: msg.role === 'USER' ? 'user' : 'assistant',
+                  content: msg.content,
+                  createdAt: msg.createdAt.toISOString(),
+                }}
+                isLast={index === currentConversation.messages.length - 1}
+              />
+            ))}
+          </AnimatePresence>
+
+          {/* Exercise Cards */}
+          {suggestedExercises.length > 0 && (
+            <div className="space-y-3 ml-11">
+              <AnimatePresence>
+                {suggestedExercises.map((exercise) => (
+                  <ExerciseCardAnimated
+                    key={exercise.id}
+                    id={exercise.id}
+                    title={exercise.title}
+                    framework={exercise.framework || 'Therapeutic Exercise'}
+                    description={exercise.aspect || 'A guided exercise to help with your current situation.'}
+                    onStart={handleStartExercise}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {!currentConversation?.messages?.length && (
-          <div className="text-center text-muted-foreground py-8">
-            <h2 className="text-lg font-medium mb-2">Welcome to Sentient Self</h2>
-            <p className="mb-4">I'm here to listen and support you. What would you like to talk about today?</p>
-          </div>
-        )}
+          {/* Typing Indicator */}
+          <AnimatePresence>
+            {isTyping && <TypingIndicator />}
+          </AnimatePresence>
 
-        {currentConversation?.messages?.map((msg, index) => (
-          <MessageBubble
-            key={msg.id || index}
-            content={msg.content}
-            isUser={msg.role === 'USER'}
-            timestamp={msg.createdAt}
-          />
-        ))}
-
-        {/* Exercise suggestions */}
-        {suggestedExercises.length > 0 && (
-          <ExerciseSuggestions
-            exercises={suggestedExercises}
-            onResponse={handleExerciseResponse}
-          />
-        )}
-
-        {isTyping && (
-          <MessageBubble
-            content="..."
-            isUser={false}
-            isTyping={true}
-          />
-        )}
-
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input */}
-      <div className="border-t border-border p-4 bg-card">
-        <div className="flex space-x-2">
-          <Input
-            ref={inputRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button 
-            onClick={sendMessage} 
-            disabled={!message.trim() || isLoading}
-            size="icon"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
+      <ChatInput
+        value={message}
+        onChange={setMessage}
+        onSend={() => sendMessage()}
+        disabled={isLoading}
+        placeholder="Share what's on your mind..."
+      />
     </div>
   )
 }

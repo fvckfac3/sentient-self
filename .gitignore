@@ -54,3 +54,6 @@ dist/
 
 # Prisma
 /prisma/migrations/
+
+# Auto Claude data directory
+.auto-claude/

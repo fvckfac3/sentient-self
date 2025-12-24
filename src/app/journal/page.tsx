@@ -12,15 +12,22 @@ export default function JournalPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent SSR/hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Redirect if not authenticated
   useEffect(() => {
+    if (!mounted) return
     if (status === 'unauthenticated') {
       router.push('/auth/signin')
     }
-  }, [status, router])
+  }, [mounted, status, router])
 
-  if (status === 'loading') {
+  if (!mounted || status === 'loading') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <LoadingSpinner />

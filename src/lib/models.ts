@@ -10,7 +10,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 
 // DeepSeek provider (OpenAI-compatible API)
 const deepseek = createOpenAI({
-  baseURL: 'https://api.deepseek.com',
+  baseURL: 'https://api.deepseek.com/v1',
   apiKey: process.env.DEEPSEEK_API_KEY,
 })
 
@@ -37,6 +37,16 @@ export const modelRegistry: Record<string, ModelConfig> = {
     tier: 'FREE',
     costPer1kTokens: 0.00014,
     bestFor: 'General conversations, all exercises - Best value!'
+  },
+
+  'deepseek-reasoner': {
+    provider: 'DeepSeek',
+    model: deepseek('deepseek-reasoner'),
+    name: 'DeepSeek Reasoner (R1)',
+    description: 'Advanced reasoning model for complex therapeutic work',
+    tier: 'FREE',
+    costPer1kTokens: 0.00055,
+    bestFor: 'Deep analysis, complex patterns, trauma processing'
   },
   
   'gemini-1.5-flash': {
@@ -148,8 +158,9 @@ export function getModelsByTier(tier: 'FREE' | 'PREMIUM' | 'INSTITUTION'): Model
 export function getModel(modelId: ModelId) {
   const config = modelRegistry[modelId]
   if (!config) {
-    console.warn(`Model ${modelId} not found, falling back to gpt-4o-mini`)
-    return modelRegistry['gpt-4o-mini'].model
+    console.warn(`Model ${modelId} not found, falling back to deepseek-chat`)
+    // Fallback to first available free model
+    return modelRegistry['deepseek-chat']?.model || modelRegistry['gemini-1.5-flash'].model
   }
   return config.model
 }

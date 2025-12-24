@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useAuthStore } from '@/store/auth'
@@ -15,16 +15,19 @@ import { ConsentStep } from '@/components/onboarding/consent-step'
 import { AIHandoffStep } from '@/components/onboarding/ai-handoff-step'
 import { UserBaselineProfile } from '@/types'
 
-// Disable static generation for this page (requires auth)
-export const dynamic = 'force-dynamic'
-
 const TOTAL_STEPS = 8
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const { setUser } = useAuthStore()
   const [currentStep, setCurrentStep] = useState(1)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent SSR/hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   const [baselineProfile, setBaselineProfile] = useState<Partial<UserBaselineProfile>>({
     primary_intents: [],
     current_challenges: [],
@@ -92,6 +95,17 @@ export default function OnboardingPage() {
     } catch (error) {
       console.error('Error completing onboarding:', error)
     }
+  }
+
+  // Show loading state during mount and session check
+  if (!mounted || status === 'loading') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-foreground mb-2">Loading...</h1>
+        </div>
+      </div>
+    )
   }
 
   if (!session) {

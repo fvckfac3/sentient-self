@@ -50,6 +50,9 @@ model User {
   onboardingDone   Boolean           @default(false)
   preferredModel   String            @default("deepseek-chat")
   
+  // Medical Disclaimer
+  disclaimerAcknowledgedAt DateTime?
+  
   // Stripe billing fields
   stripeCustomerId     String?       @unique
   stripeSubscriptionId String?       @unique
