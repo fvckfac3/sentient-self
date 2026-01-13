@@ -265,3 +265,198 @@ html {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
+
+/* ============================================
+   MOBILE BOTTOM NAVIGATION STYLES
+   ============================================ */
+
+/* Bottom navigation container */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: hsl(var(--card));
+  border-top: 1px solid hsl(var(--border));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Bottom nav items - touch-friendly 44px hit areas */
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  min-width: 64px;
+  padding: 8px 12px;
+  gap: 4px;
+  flex: 1;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.15s ease;
+}
+
+.bottom-nav-item.active {
+  color: hsl(var(--primary));
+}
+
+.bottom-nav-item:hover {
+  color: hsl(var(--foreground));
+}
+
+.bottom-nav-item span {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Ensure touch targets are at least 44x44px */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-lg {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================ */
+
+@layer utilities {
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl md:text-4xl;
+  }
+}
+
+/* ============================================
+   MOBILE LAYOUT UTILITIES
+   ============================================ */
+
+/* Single column layout for mobile */
+@media (max-width: 767px) {
+  .mobile-single-column {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mobile-p-4 {
+    padding: 1rem !important;
+  }
+  
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+/* Tablet and desktop layout */
+@media (min-width: 768px) {
+  .desktop-hide {
+    display: none !important;
+  }
+  
+  .desktop-show {
+    display: block;
+  }
+  
+  .desktop-flex {
+    display: flex;
+  }
+}
+
+/* Main content padding to account for bottom nav on mobile */
+@media (max-width: 767px) {
+  .has-bottom-nav {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Card styling adjustments for mobile */
+@media (max-width: 640px) {
+  .card-mobile-full {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ============================================
+   ANIMATION ENHANCEMENTS
+   ============================================ */
+
+/* Slide up animation for mobile sheets */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Scale in animation for modals */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}

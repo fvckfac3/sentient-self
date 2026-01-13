@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OnboardingStep } from './onboarding-step'
-import { AlertTriangle, Check } from 'lucide-react'
+import { AlertTriangle, Check, Loader2 } from 'lucide-react'
 
 interface ConsentStepProps {
     onNext: () => void
@@ -11,15 +11,38 @@ interface ConsentStepProps {
 
 export function ConsentStep({ onNext, onBack }: ConsentStepProps) {
     const [consented, setConsented] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const handleNext = async () => {
+        if (!consented) return
+
+        setIsSubmitting(true)
+        try {
+            // Store disclaimer acknowledgment timestamp
+            const response = await fetch('/api/disclaimer/acknowledge', {
+                method: 'POST',
+            })
+
+            if (response.ok) {
+                onNext()
+            } else {
+                console.error('Failed to acknowledge disclaimer')
+            }
+        } catch (error) {
+            console.error('Error acknowledging disclaimer:', error)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     return (
         <OnboardingStep
             title="Important Information"
             description="Please read and acknowledge the following before we begin."
-            onNext={onNext}
+            onNext={handleNext}
             onBack={onBack}
-            isNextDisabled={!consented}
-            nextLabel="I Understand & Agree"
+            isNextDisabled={!consented || isSubmitting}
+            nextLabel={isSubmitting ? "Saving..." : "I Understand & Agree"}
         >
             <div className="space-y-4">
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -70,8 +93,8 @@ export function ConsentStep({ onNext, onBack }: ConsentStepProps) {
                 <button
                     onClick={() => setConsented(!consented)}
                     className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${consented
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:bg-accent/50'
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:bg-accent/50'
                         }`}
                 >
                     <span className="text-sm font-medium">

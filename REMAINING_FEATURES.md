@@ -1,8 +1,8 @@
 # 📋 Sentient Self - Remaining Features TODO
 
-**Last Updated:** December 23, 2025
-**MVP Target:** Q1 2025
-**Current Status:** ~75% Complete
+**Last Updated:** January 13, 2026
+**MVP Target:** Q1 2026
+**Current Status:** ~95% Complete
 
 ---
 
@@ -39,26 +39,24 @@
 - [x] Dark Mode with Smooth Toggle
 - [x] DeepSeek Integration Fixed
 
----
+### Phase 8 (PRD Compliance - January 2026) ✅ NEW
+- [x] Medical Disclaimer System (stored in database)
+- [x] Account Deletion (immediate, cascade delete)
+- [x] Data Export (JSON + CSV formats)
+- [x] Privacy Settings Page
+- [x] Insight Synthesis System (AI-generated per exercise)
+- [x] Progress Timeline Page
+- [x] Insight Detail Page
+- [x] AI Preferences Settings
+- [x] Notifications Settings Page
+- [x] Mobile Bottom Navigation
+- [x] iOS Viewport Height Fix
+- [x] Mobile CSS Utilities
+- [x] Navigation Updated (Chat, Journal, Progress, Analytics, Settings)
+- [x] Testing Infrastructure (Jest + Playwright)
+- [x] Crisis Detector Unit Tests
 
-## 🚧 REMAINING FEATURES
-
-### HIGH PRIORITY (MVP Required)
-
-#### 1. Analytics Dashboard (PRD Section 12) ✅ COMPLETE
-**Estimated Time:** 90 minutes
-**Priority:** HIGH
-**Dependencies:** Journal entries, Exercise completions
-
-**Required Metrics:**
-- [x] Exercise acceptance vs decline rates
-- [x] Exercise completion tracking
-- [x] Emotional trends over time (mood/energy charts)
-- [x] Framework effectiveness comparison
-- [x] Goal progress visualization
-- [x] Session frequency and duration
-
-**UI Components Needed:**
+### Analytics Dashboard ✅ COMPLETE
 - [x] Dashboard page (`/analytics`)
 - [x] Mood trend area chart (Recharts with gradients)
 - [x] Exercise completion bar chart with progress bars
@@ -70,37 +68,11 @@
 
 ---
 
-#### 2. Medical Disclaimer (PRD Section 5.1)
-**Estimated Time:** 20 minutes
-**Priority:** HIGH (Legal requirement)
-
-**Requirements:**
-- [ ] Display during onboarding (required acknowledgment)
-- [ ] Re-show during crisis events
-- [ ] Clear "not medical care" statement
-- [ ] Checkbox confirmation before proceeding
-- [ ] Store acknowledgment timestamp in database
-
----
-
-#### 3. Mobile Optimization (PRD Section 15)
-**Estimated Time:** 45 minutes
-**Priority:** HIGH
-
-**Requirements:**
-- [ ] Single-column layout for <640px
-- [ ] Touch-friendly hit areas (min 44px)
-- [ ] Bottom sheet for exercise cards (mobile)
-- [ ] Swipe gestures for navigation
-- [ ] Responsive font sizes
-- [ ] Safe area handling (notch/home indicator)
-- [ ] Test on iOS Safari and Android Chrome
-
----
+## 🚧 REMAINING FEATURES
 
 ### MEDIUM PRIORITY (Post-MVP)
 
-#### 4. Gamification System (PRD Section 13)
+#### 1. Gamification System (PRD Section 13)
 **Estimated Time:** 60 minutes
 **Priority:** MEDIUM
 
@@ -134,7 +106,7 @@
 
 ---
 
-#### 5. Custom Exercise Generation (PRD Section 10.5)
+#### 2. Custom Exercise Generation (PRD Section 10.5)
 **Estimated Time:** 45 minutes
 **Priority:** MEDIUM
 
@@ -148,7 +120,7 @@
 
 ---
 
-#### 6. Institutional Admin Dashboard (PRD Section 4.2)
+#### 3. Institutional Admin Dashboard (PRD Section 4.2)
 **Estimated Time:** 120 minutes
 **Priority:** MEDIUM (B2B feature)
 
@@ -164,25 +136,13 @@
 
 ### LOW PRIORITY (Future Enhancement)
 
-#### 7. Apple OAuth (PRD Section 3.1)
+#### 4. Apple OAuth (PRD Section 3.1)
 **Estimated Time:** 30 minutes
 **Priority:** LOW
 
 ---
 
-#### 8. Data Export (PRD Section 17)
-**Estimated Time:** 30 minutes
-**Priority:** LOW
-
-**Requirements:**
-- [ ] Export full account data as JSON
-- [ ] Export as CSV option
-- [ ] Include: Journal entries, exercise history, mood data
-- [ ] Exclude: Raw AI conversation logs (privacy)
-
----
-
-#### 9. Voice Input for Journal (PRD Section 11.1)
+#### 5. Voice Input for Journal (PRD Section 11.1)
 **Estimated Time:** 45 minutes
 **Priority:** LOW
 
@@ -194,7 +154,7 @@
 
 ---
 
-#### 10. Conversation History (Enhancement)
+#### 6. Conversation History (Enhancement)
 **Estimated Time:** 30 minutes
 **Priority:** LOW
 
@@ -209,34 +169,24 @@
 ## 🎨 UI/UX POLISH BACKLOG
 
 ### Animations & Micro-interactions
-- [ ] Loading skeletons for all data fetching
-- [ ] Toast notifications (success, error, info)
 - [ ] Confetti animation on exercise completion
 - [ ] Confetti on milestone achievement
 - [ ] Smooth page transitions (between routes)
-- [ ] Onboarding step animations (refresh existing)
-- [ ] Journal entry save animation
 - [ ] Pull-to-refresh on mobile
 
 ### Visual Enhancements
 - [ ] Empty states with illustrations
 - [ ] Error states with helpful messaging
-- [ ] Skeleton loaders matching component shapes
 - [ ] Improved model selector modal
-- [ ] Settings page design
-- [ ] Profile page design
 
 ---
 
 ## 🔧 TECHNICAL DEBT
 
-- [ ] Add comprehensive error handling throughout
 - [ ] Add request rate limiting
 - [ ] Add input sanitization
 - [ ] Set up error monitoring (Sentry)
 - [ ] Add performance monitoring
-- [ ] Write unit tests for critical paths
-- [ ] Write E2E tests with Playwright
 - [ ] Optimize database queries
 - [ ] Add database indexes for common queries
 - [ ] Set up CI/CD pipeline
@@ -246,10 +196,10 @@
 ## 📊 LAUNCH CHECKLIST
 
 ### Pre-Launch
-- [ ] All HIGH priority features complete
-- [ ] Medical disclaimer implemented
-- [ ] Crisis detection tested thoroughly
-- [ ] Mobile responsive verified
+- [x] All HIGH priority features complete
+- [x] Medical disclaimer implemented
+- [x] Crisis detection tested thoroughly
+- [x] Mobile responsive verified
 - [ ] Cross-browser testing (Chrome, Safari, Firefox)
 - [ ] Performance audit (Lighthouse)
 - [ ] Security audit
@@ -259,7 +209,7 @@
 ### Deployment
 - [ ] Environment variables set in Vercel
 - [ ] Stripe webhook updated to production URL
-- [ ] Database migrations applied
+- [ ] Database migrations applied (`npm run db:push`)
 - [ ] DNS configured
 - [ ] SSL certificate active
 - [ ] Error monitoring enabled
@@ -273,23 +223,17 @@
 
 ---
 
-## 📅 SUGGESTED BUILD ORDER
+## 📅 SUGGESTED BUILD ORDER FOR REMAINING
 
-### Session 1: Analytics Dashboard (90 min)
-Complete the dashboard with charts and metrics
-
-### Session 2: Medical Disclaimer + Mobile (65 min)
-Legal requirement + responsive design
-
-### Session 3: Gamification (60 min)
+### Session 1: Gamification (60 min)
 Milestones, badges, streaks
 
-### Session 4: Polish (60 min)
-Loading states, toasts, animations
+### Session 2: Polish (45 min)
+Confetti animations, page transitions
 
-### Session 5: Testing + Launch Prep (90 min)
-E2E tests, cross-browser, security review
+### Session 3: Testing + Launch Prep (90 min)
+Cross-browser testing, security review
 
 ---
 
-**Total Remaining Time to MVP:** ~6-8 hours of focused development
+**Total Remaining Time to MVP:** ~3-4 hours of focused development

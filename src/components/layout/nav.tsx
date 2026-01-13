@@ -18,8 +18,9 @@ export function Nav() {
   const navLinks = [
     { href: '/chat', label: 'Chat', enabled: true },
     { href: '/journal', label: 'Journal', enabled: true },
+    { href: '/progress', label: 'Progress', enabled: true },
     { href: '/analytics', label: 'Analytics', enabled: true },
-    { href: '/exercises', label: 'Exercises', enabled: true },
+    { href: '/settings', label: 'Settings', enabled: true },
   ]
 
   const handleSignOut = () => {
@@ -29,14 +30,14 @@ export function Nav() {
   const handleManageSubscription = async () => {
     try {
       setPortalLoading(true)
-      
+
       const response = await fetch('/api/stripe/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       })
 
       const data = await response.json()
-      
+
       if (data.url) {
         window.location.href = data.url
       } else {
@@ -78,8 +79,8 @@ export function Nav() {
                     pathname === link.href
                       ? 'bg-primary text-primary-foreground'
                       : link.enabled
-                      ? 'text-foreground hover:bg-accent hover:text-accent-foreground'
-                      : 'text-muted-foreground cursor-not-allowed opacity-50',
+                        ? 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                        : 'text-muted-foreground cursor-not-allowed opacity-50',
                     !link.enabled && 'pointer-events-none'
                   )}
                   aria-disabled={!link.enabled}

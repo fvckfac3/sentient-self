@@ -66,6 +66,7 @@ model User {
   exercises        ExerciseCompletion[]
   declinations     ExerciseDeclination[]
   streaks          UserStreak[]
+  insights         Insight[]
   institution      Institution?      @relation(fields: [institutionId], references: [id])
 }
 
@@ -171,6 +172,25 @@ model ExerciseCompletion {
   
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  insight  Insight?
+}
+
+// Insight Synthesis Model - PRD Core Systems requirement
+// Exactly one insight per completed exercise, immutable
+model Insight {
+  id                   String   @id @default(uuid())
+  userId               String
+  exerciseCompletionId String   @unique
+  exerciseId           String
+  createdAt            DateTime @default(now())
+  synthesis            String   @db.Text  // AI-generated synthesis, immutable
+  annotations          String[] // Array of key insights/themes
+  
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseCompletion ExerciseCompletion @relation(fields: [exerciseCompletionId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model JournalEntry {
