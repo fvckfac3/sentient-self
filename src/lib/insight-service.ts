@@ -80,8 +80,7 @@ Example annotations: "self-compassion practice | recognizing triggers | breaking
                     role: 'user',
                     content: synthesisPrompt
                 }
-            ],
-            maxTokens: 500
+            ]
         })
 
         const text = result.text || ''

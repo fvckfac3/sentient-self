@@ -7,6 +7,7 @@ declare module 'next-auth' {
             id: string
             subscriptionTier?: string
             onboardingDone?: boolean
+            preferredModel?: string
         } & DefaultSession['user']
     }
 
@@ -14,6 +15,7 @@ declare module 'next-auth' {
         id: string
         subscriptionTier?: string
         onboardingDone?: boolean
+        preferredModel?: string
     }
 }
 
