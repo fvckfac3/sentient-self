@@ -44,6 +44,69 @@ describe('Crisis Detector', () => {
             // Should not trigger on past tense recovery statements
             expect(result.severity).not.toBe('critical')
         })
+
+        it('should detect critical severity for "end it all"', () => {
+            const result = detectCrisis('I just want to end it all')
+            expect(result.severity).toBe('critical')
+ expect(result.isCrisis).toBe(true)
+        })
+
+        it('should detect high severity for "wish I was dead"', () => {
+            const result = detectCrisis('Sometimes I wish I was dead')
+            expect(result.severity).toBe('high')
+            expect(result.recommendedAction).toBe('safety_check')
+        })
+
+        it('should detect medium severity for "never wake up"', () => {
+            const result = detectCrisis("I just want to sleep and never wake up")
+            expect(result.severity).toBe('medium')
+        })
+
+        it('should detect medium severity for "want to disappear"', () => {
+            const result = detectCrisis('I want to disappear')
+            expect(result.severity).toBe('medium')
+        })
+
+        it('should detect high severity for perceived burdensomeness', () => {
+            const result = detectCrisis("No one would notice if I was gone")
+            expect(result.severity).toBe('high')
+        })
+
+        it('should detect high severity for "can\u2019t do this anymore" with curly apostrophe', () => {
+            const result = detectCrisis('I can\u2019t do this anymore')
+            expect(result.severity).toBe('high')
+        })
+
+        it('should not false positive on "Kill Bill" mention', () => {
+            const result = detectCrisis('We watched Kill Bill last night, it was great')
+            expect(result.severity).toBe('none')
+        })
+
+        it('should not false positive on grief', () => {
+            const result = detectCrisis('My grandmother died last year and I miss her')
+            expect(result.severity).toBe('none')
+        })
+
+        it('should not false positive on discussion about others', () => {
+            const result = detectCrisis('My brother struggled with depression but he is doing better now')
+            expect(result.severity).toBe('none')
+        })
+
+        it('should not false positive on therapist/patient discussion', () => {
+            const result = detectCrisis('My therapist says I am making real progress with these thoughts')
+            expect(result.severity).toBe('none')
+        })
+
+        it('should handle empty and whitespace-only messages', () => {
+            expect(detectCrisis('').severity).toBe('none')
+            expect(detectCrisis('   ').severity).toBe('none')
+        })
+
+        it('should handle very long messages', () => {
+            const long = 'I had a normal day. '.repeat(500) + 'I want to end my life'
+            const result = detectCrisis(long)
+            expect(result.isCrisis).toBe(true)
+        })
     })
 
     describe('getCrisisResponse', () => {

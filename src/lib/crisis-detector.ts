@@ -19,6 +19,7 @@ const CRITICAL_PATTERNS = [
   /\b(better off (dead|without me)|no reason to (live|go on)|can'?t (go on|take it anymore))\b/i,
   /\b(going to kill myself|planning to (end it|die|kill myself)|have a plan to)\b/i,
   /\b(kill myself|killing myself)\b/i,
+  /\b(end it all|take my (own )?life|wanna die|wanna kill myself)\b/i,
   
   // Self-harm
   /\b(cut(ting)? myself|hurt(ing)? myself|self[- ]?harm|burn(ing)? myself)\b/i,
@@ -36,6 +37,9 @@ const HIGH_PATTERNS = [
   /\b(can'?t see a (future|way forward)|trapped|no escape)\b/i,
   /\b(no point (in|to) (going on|living|continuing))\b/i,
   /\b(don'?t see (any|the) point)\b/i,
+  /\bwish I (was|were) dead\b/i,
+  /\bno one would (notice|care) if I (was |were )?gone\b/i,
+  /\bcan'?t do (this|it) anymore\b/i,
   
   // Severe distress
   /\b(can'?t (breathe|function|cope)|falling apart|breaking down)\b/i,
@@ -46,7 +50,8 @@ const MEDIUM_PATTERNS = [
   // Passive ideation
   /\b(wish I (wasn'?t here|didn'?t exist|could (?:just\s+)?disappear))\b/i,
   /\b(want to (?:just\s+)?disappear|disappear (?:forever|for good))\b/i,
-  /\b(don'?t (care|want to) wake up|sleep forever)\b/i,
+  /\b(don'?t (care|want to) wake up|sleep forever|never wake up)\b/i,
+  /\bwish I could (?:just\s+)?(vanish|fade away|not exist)\b/i,
   
   // Severe emotional distress
   /\b(hate myself|worthless|disgusting|broken beyond repair)\b/i,
@@ -63,9 +68,15 @@ const LOW_PATTERNS = [
 /**
  * Detect crisis indicators in a message
  */
-export function detectCrisis(message: string): CrisisDetectionResult {
+export function detectCrisis(rawMessage: string): CrisisDetectionResult {
   const triggers: string[] = []
   let severity: CrisisDetectionResult['severity'] = 'none'
+
+  // Normalize unicode punctuation so curly apostrophes/quotes from mobile
+  // keyboards still match patterns written with straight characters
+  const message = typeof rawMessage === 'string'
+    ? rawMessage.replace(/[‘’]/g, "'").replace(/[“”]/g, '"')
+    : ''
   
   // Check CRITICAL patterns first (highest priority)
   for (const pattern of CRITICAL_PATTERNS) {
