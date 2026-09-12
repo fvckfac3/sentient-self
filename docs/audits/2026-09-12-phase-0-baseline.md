@@ -59,3 +59,14 @@ Current detector is regex-only, English-only, and misses common phrasings. Known
 ## Next: Phase 1 quality standard
 
 Gate order for every Phase 1 remediation batch: `next lint` (0 errors) → `next build` → `jest` → targeted coverage bump for the file touched. Quality bar defined in `docs/codebase_audit_prompt.md` (tiers: CRITICAL/HIGH/MEDIUM/LOW). Start batch 1 with: crisis-detector hardening, next upgrade, env.ts audit, then the `ai-controller.ts` (769-line, 0% coverage) split.
+
+## Phase 1 progress — batch 1 complete (2026-09-12)
+
+| Item | Result |
+|---|---|
+| Crisis-detector hardening | Curly-apostrophe normalization (mobile keyboards), `end it all`, `take my life`, `wanna die`, `wish I (was/were) dead`, `never wake up`, `vanish/fade away` patterns; 12 new tests incl. imminence + false-positive guards. 21/21 pass. |
+| Next.js upgrade | 14.1.0 → 14.2.35 (patched line incl. middleware-bypass CVE-2025-29927). Build clean. |
+| env.ts audit | Verified: validation correctly skipped during build, required vars enforced at runtime. No changes needed. |
+| ai-controller split | `src/lib/ai/exercise-gate.ts` extracted (gate heuristics: challenge detection, regulation check, challenge typing, keyword extraction). 33 unit tests, gate module at 100% stmts/branches. Controller delegates. |
+
+Next batch: journal-service + prisma mocks, session-mgmt auth tests, insight-service tests, then billing/subscription code review.
