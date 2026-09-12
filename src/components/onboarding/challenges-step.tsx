@@ -60,7 +60,7 @@ export function ChallengesStep({ challenges, onUpdate, onNext, onBack }: Challen
                 })}
             </div>
             <p className="text-sm text-muted-foreground text-center">
-                It's okay if you're not sure. We can explore this together.
+                It&apos;s okay if you&apos;re not sure. We can explore this together.
             </p>
         </OnboardingStep>
     )

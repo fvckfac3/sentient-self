@@ -44,7 +44,8 @@ const HIGH_PATTERNS = [
 
 const MEDIUM_PATTERNS = [
   // Passive ideation
-  /\b(wish I (wasn'?t here|didn'?t exist|could disappear))\b/i,
+  /\b(wish I (wasn'?t here|didn'?t exist|could (?:just\s+)?disappear))\b/i,
+  /\b(want to (?:just\s+)?disappear|disappear (?:forever|for good))\b/i,
   /\b(don'?t (care|want to) wake up|sleep forever)\b/i,
   
   // Severe emotional distress

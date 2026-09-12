@@ -70,9 +70,15 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^30.0.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
+    "jest": "^30.5.1",
+    "jest-environment-jsdom": "^30.5.1",
     "tsx": "^4.21.0"
   },
   "prisma": {

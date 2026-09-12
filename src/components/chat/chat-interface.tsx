@@ -259,7 +259,7 @@ export function ChatInterface() {
               className="text-center text-muted-foreground py-8"
             >
               <h2 className="text-lg font-medium mb-2">Welcome to Sentient Self</h2>
-              <p className="mb-4">I'm here to listen and support you. What would you like to talk about today?</p>
+              <p className="mb-4">I&apos;m here to listen and support you. What would you like to talk about today?</p>
             </motion.div>
           )}
 

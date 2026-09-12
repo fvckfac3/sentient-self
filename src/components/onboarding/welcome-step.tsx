@@ -18,7 +18,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
         >
             <div className="space-y-6">
                 <p className="text-muted-foreground">
-                    Before we begin, I'd like to learn a bit about you so I can personalize
+                    Before we begin, I&apos;d like to learn a bit about you so I can personalize
                     your experience. This will take about 2-3 minutes.
                 </p>
 
@@ -38,7 +38,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
                         <div>
                             <h3 className="font-medium">Trauma-Informed</h3>
                             <p className="text-sm text-muted-foreground">
-                                Your pace, your choice. I'll never push you beyond what feels safe.
+                                Your pace, your choice. I&apos;ll never push you beyond what feels safe.
                             </p>
                         </div>
                     </div>

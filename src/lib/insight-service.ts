@@ -81,7 +81,7 @@ Example annotations: "self-compassion practice | recognizing triggers | breaking
                     content: synthesisPrompt
                 }
             ],
-            maxTokens: 500
+            maxOutputTokens: 500
         })
 
         const text = result.text || ''

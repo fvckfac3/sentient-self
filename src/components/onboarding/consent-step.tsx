@@ -52,7 +52,7 @@ export function ConsentStep({ onNext, onBack }: ConsentStepProps) {
                             <h3 className="font-medium text-destructive mb-1">This is Not Medical Care</h3>
                             <p className="text-sm text-muted-foreground">
                                 Sentient Self is a personal development tool and is not a substitute for professional
-                                mental health treatment, therapy, or medical care. If you're experiencing a mental
+                                mental health treatment, therapy, or medical care. If you&apos;re experiencing a mental
                                 health emergency, please contact emergency services immediately.
                             </p>
                         </div>
