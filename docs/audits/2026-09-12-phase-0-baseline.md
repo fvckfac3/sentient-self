@@ -70,3 +70,22 @@ Gate order for every Phase 1 remediation batch: `next lint` (0 errors) → `next
 | ai-controller split | `src/lib/ai/exercise-gate.ts` extracted (gate heuristics: challenge detection, regulation check, challenge typing, keyword extraction). 33 unit tests, gate module at 100% stmts/branches. Controller delegates. |
 
 Next batch: journal-service + prisma mocks, session-mgmt auth tests, insight-service tests, then billing/subscription code review.
+
+## Phase 1 progress — batch 2 complete (2026-09-13)
+
+| Item | Result |
+|---|---|
+| Prisma mocks | Added `src/lib/__mocks__/prisma.ts` (manual mock, `jest.mock('@/lib/prisma')`). Used by all API-route and service tests below. |
+| Journal API tests | `src/app/api/journal/__tests__/route.test.ts` (11 tests: auth, date-range filter, mood/energy validation, upsert-per-day, 500 path) + `[id]/__tests__/route.test.ts` (12 tests: 401/404/403 ownership checks on GET/PUT/DELETE, partial-update semantics). 93%/83% stmt coverage on the two route files. |
+| Session-mgmt (auth.ts) tests | `src/lib/__tests__/auth.test.ts` (9 tests): credentials `authorize` (missing creds, unknown user, OAuth-only user with null passwordHash, bad password, success), `jwt`/`session` callbacks (id/subscriptionTier/onboardingDone/preferredModel population, graceful handling of a since-deleted user). 100% stmt coverage on `auth.ts`. |
+| Insight-service tests | `src/lib/__tests__/insight-service.test.ts` (7 tests): immutability (existing insight short-circuits generation), synthesis/annotation parsing, AI-failure fallback, annotation length/empty filtering, user- and id-scoped queries. 95% stmt coverage. |
+| Billing/subscription code review | Reviewed `src/app/api/stripe/{checkout,portal,webhook}/route.ts` and `src/lib/stripe.ts`. Found and fixed two related bugs (below). Added 5 tests for checkout route + 6 for webhook route (all passing), including a regression test that fails without the fix. |
+
+### Billing bugs found and fixed
+
+1. **Plan/price decoupling on checkout (HIGH, billing integrity)**: `checkout/route.ts` accepted a client-supplied `priceId` verbatim with no validation whenever the request's `plan` field didn't match `'premium'`/`'institution'` exactly (e.g. any other string, including one intentionally not matching so the price-specific branches were skipped), and separately stamped the *raw, unvalidated* client `plan` string into Stripe metadata (`plan: plan || 'premium'`) rather than deriving it from the price actually being charged. Net effect: a client could hit `/api/stripe/checkout` directly (bypassing the UI, which never sends `priceId`) with a `priceId` for any price it could name plus `plan: 'institution'`, and — in particular whenever `STRIPE_INSTITUTION_PRICE_ID` wasn't configured for an environment — get `metadata.plan = 'institution'` written onto a checkout session backed by an arbitrary/cheaper price, which the webhook then reads to grant the INSTITUTION tier. Fixed by building a `priceId -> tier` map from the two known env price IDs and rejecting any `priceId` not in that map (400), and deriving `resolvedPlan` from the map for every path instead of trusting the client's `plan` string.
+2. **Subscription-metadata gap silently downgrades paying customers (HIGH, functional bug)**: `subscription_data.metadata` at checkout creation only ever included `userId`, never `plan`. `webhook.ts`'s `handleSubscriptionUpdated` reads `subscription.metadata?.plan` to decide INSTITUTION vs PREMIUM — since that field was always `undefined`, **every** `customer.subscription.updated` event (renewals, trial-to-active transitions, payment-method updates — not just plan changes) would silently reset an active Institution subscriber to `PREMIUM` in the database. Fixed by stamping `plan: resolvedPlan` onto `subscription_data.metadata` alongside `userId`. Covered by a regression test (`preserves the institution tier on subscription.updated instead of defaulting to premium`) that fails on the pre-fix code.
+
+Unit tests: 54 → 83 (all passing). Lint: unchanged (0 errors, 2 pre-existing warnings, see baseline). Build: unchanged, clean (34/34 pages).
+
+Next batch: crisis-detector coverage gaps from Phase 0 (imminence-without-keywords, indirect self-harm, hopelessness phrasings, false-positive audit, escalation guard — see "Crisis detector coverage gaps" above), then `.env.example` audit against `src/lib/env.ts`.
