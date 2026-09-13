@@ -84,7 +84,7 @@ export class AIController {
     if (crisisCheck.isCrisis) {
       console.log('🚨 CRISIS DETECTED:', {
         severity: crisisCheck.severity,
-        triggers: crisisCheck.triggers,
+        triggerCount: crisisCheck.triggers.length,
         action: crisisCheck.recommendedAction
       })
       
@@ -111,7 +111,7 @@ export class AIController {
     if (crisisCheck.severity === 'medium' || crisisCheck.severity === 'low') {
       console.log('⚠️ Safety check triggered:', {
         severity: crisisCheck.severity,
-        triggers: crisisCheck.triggers,
+        triggerCount: crisisCheck.triggers.length,
         action: crisisCheck.recommendedAction
       })
       

@@ -107,6 +107,96 @@ describe('Crisis Detector', () => {
             const result = detectCrisis(long)
             expect(result.isCrisis).toBe(true)
         })
+
+        describe('imminence without obvious keywords', () => {
+            it('should detect critical severity for "have a plan to"', () => {
+                const result = detectCrisis('I have a plan to do it this weekend')
+                expect(result.severity).toBe('critical')
+            })
+
+            it('should detect critical severity for having means ready', () => {
+                expect(detectCrisis('I have pills ready').severity).toBe('critical')
+                expect(detectCrisis('I have a gun ready').severity).toBe('critical')
+            })
+
+            it('should detect critical severity for writing a note', () => {
+                const result = detectCrisis('I wrote a suicide note last night')
+                expect(result.severity).toBe('critical')
+            })
+
+            it('should detect critical severity for "going to do it tonight"', () => {
+                const result = detectCrisis('I am going to do it tonight')
+                expect(result.severity).toBe('critical')
+            })
+
+            it('should detect critical severity for "this is goodbye"', () => {
+                const result = detectCrisis('This is goodbye, thank you for everything')
+                expect(result.severity).toBe('critical')
+            })
+        })
+
+        describe('indirect self-harm phrasing', () => {
+            it('should still detect direct self-harm phrasing', () => {
+                expect(detectCrisis('I have been cutting myself').severity).toBe('critical')
+                expect(detectCrisis('I want to hurt myself').severity).toBe('critical')
+            })
+
+            it('should detect self-harm described without the word "myself"', () => {
+                expect(detectCrisis("I've been cutting my arms").severity).toBe('critical')
+                expect(detectCrisis('I burned my arm again last night').severity).toBe('critical')
+                expect(detectCrisis('I keep hurting my wrists').severity).toBe('critical')
+            })
+        })
+
+        describe('hopelessness phrasing variants', () => {
+            it('should detect high severity for "no way out" / "trapped"', () => {
+                expect(detectCrisis("There's no way out of this").severity).toBe('high')
+                expect(detectCrisis("I feel trapped and there's no escape").severity).toBe('high')
+            })
+
+            it('should detect high severity for "nothing will help"', () => {
+                const result = detectCrisis('Nothing will help at this point')
+                expect(result.severity).toBe('high')
+            })
+
+            it('should detect high severity for "don\'t see the point anymore"', () => {
+                const result = detectCrisis("I don't see the point anymore")
+                expect(result.severity).toBe('high')
+            })
+        })
+
+        describe('false-positive audit (documents accepted trade-offs, not bugs)', () => {
+            it('is intentionally conservative about negated self-harm statements', () => {
+                // The detector has no negation handling by design: a false positive here
+                // (prompting a safety check on a message that turns out to be benign) is an
+                // acceptable cost given the launch-blocking requirement to never miss real
+                // ideation. Do not "fix" this by adding negation lookbehind.
+                const result = detectCrisis("I don't want to hurt myself, I just needed to vent")
+                expect(result.severity).toBe('critical')
+            })
+
+            it('does not flag common hyperbolic/metaphorical language', () => {
+                expect(detectCrisis('This exam is going to kill me').severity).toBe('none')
+                expect(detectCrisis('My boss is killing me with these deadlines').severity).toBe('none')
+            })
+        })
+
+        describe('escalation guard (severity precedence regression)', () => {
+            it('resolves to critical when a critical and low pattern both match', () => {
+                const result = detectCrisis('I feel so alone, and I want to end my life')
+                expect(result.severity).toBe('critical')
+            })
+
+            it('resolves to critical when a critical and medium pattern both match', () => {
+                const result = detectCrisis('I want to disappear and I want to end my life')
+                expect(result.severity).toBe('critical')
+            })
+
+            it('resolves to high (not medium/low) when a high and low pattern both match', () => {
+                const result = detectCrisis('I feel so alone and hopeless')
+                expect(result.severity).toBe('high')
+            })
+        })
     })
 
     describe('getCrisisResponse', () => {

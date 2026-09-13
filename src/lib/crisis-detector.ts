@@ -22,12 +22,12 @@ const CRITICAL_PATTERNS = [
   /\b(end it all|take my (own )?life|wanna die|wanna kill myself)\b/i,
   
   // Self-harm
-  /\b(cut(ting)? myself|hurt(ing)? myself|self[- ]?harm|burn(ing)? myself)\b/i,
+  /\b(cut(ting)? (myself|my (arm|arms|leg|legs|skin|wrist|wrists|body))|hurt(ing)? (myself|my (arm|arms|leg|legs|skin|wrist|wrists|body))|self[- ]?harm|burn(ed|ing)? (myself|my (arm|arms|leg|legs|skin|wrist|wrists|body)))\b/i,
   /\b(want to (hurt|cut|harm) myself)\b/i,
   
   // Imminent danger
   /\b(going to do it (tonight|today|now)|this is (goodbye|the end)|final (message|goodbye))\b/i,
-  /\b(have (pills|gun|knife|rope) ready|wrote (a )?(suicide )?note)\b/i,
+  /\b(have (a |an )?(pills|gun|knife|rope) ready|wrote (a )?(suicide )?note)\b/i,
 ]
 
 const HIGH_PATTERNS = [
