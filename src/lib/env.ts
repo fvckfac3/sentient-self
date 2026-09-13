@@ -25,12 +25,15 @@ const envSchema = z.object({
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_PREMIUM_PRICE_ID: z.string().optional(),
+    STRIPE_INSTITUTION_PRICE_ID: z.string().optional(),
 
     // AI API Keys (at least one required)
     DEEPSEEK_API_KEY: z.string().optional(),
     OPENAI_API_KEY: z.string().optional(),
     ANTHROPIC_API_KEY: z.string().optional(),
-    GOOGLE_AI_API_KEY: z.string().optional(),
+    // Matches @ai-sdk/google's default lookup (see src/lib/models.ts) - not GOOGLE_AI_API_KEY
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
     GROK_API_KEY: z.string().optional(),
 })
 
@@ -50,7 +53,7 @@ function validateEnv(): Env {
         parsed.data.DEEPSEEK_API_KEY,
         parsed.data.OPENAI_API_KEY,
         parsed.data.ANTHROPIC_API_KEY,
-        parsed.data.GOOGLE_AI_API_KEY,
+        parsed.data.GOOGLE_GENERATIVE_AI_API_KEY,
         parsed.data.GROK_API_KEY
     ].filter(Boolean)
 

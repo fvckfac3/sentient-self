@@ -40,7 +40,7 @@ export function CrisisScreen() {
             <CardContent>
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  If you're in immediate danger to yourself or others:
+                  If you&apos;re in immediate danger to yourself or others:
                 </p>
                 <Button 
                   size="lg" 
@@ -137,7 +137,7 @@ export function CrisisScreen() {
         {/* Return to Chat */}
         <div className="text-center">
           <p className="text-sm text-muted-foreground mb-4">
-            When you're ready and feeling safer, you can return to our conversation.
+            When you&apos;re ready and feeling safer, you can return to our conversation.
           </p>
           <Button 
             variant="outline" 
@@ -153,7 +153,7 @@ export function CrisisScreen() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground text-center">
               <strong>Important:</strong> This AI assistant is not a replacement for professional mental health care or emergency services. 
-              If you're experiencing a mental health emergency, please contact emergency services or a mental health professional immediately.
+              If you&apos;re experiencing a mental health emergency, please contact emergency services or a mental health professional immediately.
             </p>
           </CardContent>
         </Card>

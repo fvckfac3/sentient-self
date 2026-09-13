@@ -89,6 +89,7 @@ export const authOptions: NextAuthOptions = {
         if (fullUser) {
           session.user.subscriptionTier = fullUser.subscriptionTier
           session.user.onboardingDone = fullUser.onboardingDone
+          session.user.preferredModel = fullUser.preferredModel
         }
       }
       return session

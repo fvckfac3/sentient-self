@@ -39,23 +39,23 @@ export function AIHandoffStep({ onComplete, onBack }: AIHandoffStepProps) {
 
                 <div className="space-y-2">
                     <p className="text-muted-foreground">
-                        Thank you for sharing a bit about yourself. Based on what you've told me,
-                        I'll personalize our conversations to best support your unique journey.
+                        Thank you for sharing a bit about yourself. Based on what you&apos;ve told me,
+                        I&apos;ll personalize our conversations to best support your unique journey.
                     </p>
                 </div>
 
                 <div className="p-4 bg-accent/50 rounded-lg text-left">
                     <h3 className="font-medium mb-2">A few things to remember:</h3>
                     <ul className="text-sm text-muted-foreground space-y-2">
-                        <li>• <strong>You're in control.</strong> Go at your own pace. There's no pressure.</li>
-                        <li>• <strong>Exercises are optional.</strong> I'll never force you to do anything.</li>
-                        <li>• <strong>It's okay to pause.</strong> You can take breaks whenever you need.</li>
-                        <li>• <strong>I'm here to listen.</strong> Start by sharing whatever's on your mind.</li>
+                        <li>• <strong>You&apos;re in control.</strong> Go at your own pace. There&apos;s no pressure.</li>
+                        <li>• <strong>Exercises are optional.</strong> I&apos;ll never force you to do anything.</li>
+                        <li>• <strong>It&apos;s okay to pause.</strong> You can take breaks whenever you need.</li>
+                        <li>• <strong>I&apos;m here to listen.</strong> Start by sharing whatever&apos;s on your mind.</li>
                     </ul>
                 </div>
 
                 <p className="text-sm text-muted-foreground italic">
-                    "The journey of a thousand miles begins with a single step."
+                    “The journey of a thousand miles begins with a single step.”
                 </p>
             </div>
         </OnboardingStep>

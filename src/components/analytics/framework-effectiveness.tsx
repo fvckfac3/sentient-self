@@ -66,7 +66,7 @@ export function FrameworkEffectiveness({ data }: FrameworkEffectivenessProps) {
             <CardTitle>Framework Usage</CardTitle>
           </div>
           <CardDescription>
-            Therapeutic frameworks you've engaged with most
+            Therapeutic frameworks you&apos;ve engaged with most
           </CardDescription>
         </CardHeader>
 

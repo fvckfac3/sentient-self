@@ -68,7 +68,7 @@ export function MedicalDisclaimer({
                     <Phone className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="font-semibold text-red-800 dark:text-red-200">
-                        If you're in immediate danger, please contact:
+                        If you&apos;re in immediate danger, please contact:
                       </p>
                       <ul className="mt-2 space-y-1 text-red-700 dark:text-red-300">
                         <li><strong>Emergency:</strong> 911</li>

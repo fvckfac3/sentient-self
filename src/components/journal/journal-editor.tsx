@@ -172,7 +172,7 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              Today's Journal Entry
+              Today&apos;s Journal Entry
               {existingEntryId && (
                 <span className="text-xs font-normal px-2 py-1 rounded-full bg-blue-100 text-blue-800">
                   Editing
@@ -201,7 +201,7 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium">
-                What's on your mind? <span className="text-destructive">*</span>
+                What&apos;s on your mind? <span className="text-destructive">*</span>
               </label>
               <span className={`text-xs ${formData.content.length > MAX_CONTENT_LENGTH ? 'text-destructive' : 'text-muted-foreground'}`}>
                 {formData.content.length}/{MAX_CONTENT_LENGTH}
@@ -298,7 +298,7 @@ export function JournalEditor({ onSave }: JournalEditorProps) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium">
-                🎯 Tomorrow's goals (Optional)
+                🎯 Tomorrow&apos;s goals (Optional)
               </label>
               <span className="text-xs text-muted-foreground">
                 {formData.goals.length}/{MAX_GOALS_LENGTH}

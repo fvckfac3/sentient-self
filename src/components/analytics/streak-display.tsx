@@ -121,7 +121,7 @@ export function StreakDisplay({ data }: StreakDisplayProps) {
               transition={{ delay: 0.5 }}
               className="mt-4 text-center text-sm text-muted-foreground"
             >
-              🔥 You're on fire! Keep the momentum going!
+              🔥 You&apos;re on fire! Keep the momentum going!
             </motion.p>
           )}
         </CardContent>

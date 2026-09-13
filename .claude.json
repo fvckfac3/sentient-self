@@ -1,0 +1,7 @@
+{
+  "theme": "dark",
+  "planMode": true,
+  "hooks": {
+    "PostToolUse": "if [ \"$TOOL_NAME\" = \"edit_file\" ] || [ \"$TOOL_NAME\" = \"replace_file\" ]; then npm run lint && npm run test; fi"
+  }
+}

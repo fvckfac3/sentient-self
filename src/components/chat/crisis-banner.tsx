@@ -30,7 +30,7 @@ export function CrisisBanner({ isVisible, onDismiss }: CrisisBannerProps) {
                 
                 <div className="flex-1">
                   <h3 className="font-semibold text-red-900 dark:text-red-100 mb-2">
-                    You're Not Alone - Help is Available
+                    You&apos;re Not Alone - Help is Available
                   </h3>
                   
                   <div className="space-y-3">

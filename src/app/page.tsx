@@ -126,7 +126,7 @@ export default function HomePage() {
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground text-center max-w-3xl mx-auto">
               <strong>Important:</strong> Sentient Self is not medical care and does not replace professional mental health treatment. 
-              If you're experiencing a mental health crisis, please contact emergency services or a mental health professional immediately.
+              If you&apos;re experiencing a mental health crisis, please contact emergency services or a mental health professional immediately.
             </p>
           </CardContent>
         </Card>
