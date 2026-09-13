@@ -19,13 +19,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { priceId, plan } = body
 
-    // Validate price ID
+    // Resolve the requested price against our known price IDs only. The tier
+    // granted after payment is derived from this map, never from the client's
+    // `plan` string directly, so a client can't request a cheap/arbitrary
+    // priceId while claiming a higher-tier `plan`.
+    const priceTierMap: Record<string, 'premium' | 'institution'> = {}
+    if (STRIPE_PREMIUM_PRICE_ID) priceTierMap[STRIPE_PREMIUM_PRICE_ID] = 'premium'
+    if (STRIPE_INSTITUTION_PRICE_ID) priceTierMap[STRIPE_INSTITUTION_PRICE_ID] = 'institution'
+
     let validPriceId: string | undefined
     if (plan === 'premium' && STRIPE_PREMIUM_PRICE_ID) {
       validPriceId = STRIPE_PREMIUM_PRICE_ID
     } else if (plan === 'institution' && STRIPE_INSTITUTION_PRICE_ID) {
       validPriceId = STRIPE_INSTITUTION_PRICE_ID
-    } else if (priceId) {
+    } else if (priceId && priceTierMap[priceId]) {
       validPriceId = priceId
     }
 
@@ -35,6 +42,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const resolvedPlan = priceTierMap[validPriceId]
 
     // Get or create Stripe customer
     const customerId = await getOrCreateStripeCustomer(
@@ -60,11 +69,12 @@ export async function POST(request: NextRequest) {
       cancel_url: `${origin}/chat?canceled=true`,
       metadata: {
         userId: session.user.id,
-        plan: plan || 'premium',
+        plan: resolvedPlan,
       },
       subscription_data: {
         metadata: {
           userId: session.user.id,
+          plan: resolvedPlan,
         },
       },
       allow_promotion_codes: true,
