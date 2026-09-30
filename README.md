@@ -1,3 +1,19 @@
+<div align="center">
+
+  <img src="./assets/sentient-self-logo.png" alt="Sentient Self Logo" width="400"/>
+
+  # Sentient Self
+
+  ### **UNDERSTAND YOURSELF BETTER**
+
+  *AI journaling that learns your patterns and reflects your growth.*
+
+  [Explore](#) • [Capabilities](#) • [Privacy](#) • [Community](#)
+
+  ---
+
+</div>
+
 # Sentient Self - AI-Powered Therapeutic Growth Platform
 
 Sentient Self is a conversation-first, AI-guided therapeutic self-development platform designed primarily for recovering addicts and individuals seeking deep personal growth.
