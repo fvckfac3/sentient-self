@@ -2,12 +2,10 @@ import { PrismaClient } from '@prisma/client'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const prisma = new PrismaClient()
-
 /**
  * Generate a URL-friendly ID from framework name
  */
-function generateFrameworkId(name: string): string {
+export function generateFrameworkId(name: string): string {
   return name
     .toLowerCase()
     .replace(/^the\s+/i, '') // Remove "The" prefix
@@ -17,7 +15,7 @@ function generateFrameworkId(name: string): string {
     .trim()
 }
 
-async function seedFrameworks() {
+export async function seedFrameworks(prisma: PrismaClient) {
   try {
     // Read frameworks JSON file
     const frameworksPath = path.join(__dirname, '../docs/frameworks_final_13_edited.json')
@@ -98,11 +96,15 @@ async function seedFrameworks() {
   }
 }
 
-seedFrameworks()
-  .catch((e) => {
-    console.error('Fatal error:', e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+// Run directly with `npm run seed:frameworks`; `npm run db:seed` also calls it
+if (require.main === module) {
+  const prisma = new PrismaClient()
+  seedFrameworks(prisma)
+    .catch((e) => {
+      console.error('Fatal error:', e)
+      process.exit(1)
+    })
+    .finally(async () => {
+      await prisma.$disconnect()
+    })
+}

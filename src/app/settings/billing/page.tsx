@@ -87,7 +87,7 @@ export default function BillingPage() {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID }),
+        body: JSON.stringify({ plan: 'premium' }),
       })
       const data = await response.json()
       if (data.url) {

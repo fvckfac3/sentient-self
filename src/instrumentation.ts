@@ -2,6 +2,11 @@ import * as Sentry from '@sentry/nextjs'
 import { sentryOptions } from '@/lib/sentry-options'
 
 export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const { validateEnv } = await import('@/lib/env')
+    validateEnv()
+  }
+
   if (process.env.NEXT_RUNTIME === 'nodejs' || process.env.NEXT_RUNTIME === 'edge') {
     Sentry.init(sentryOptions)
   }

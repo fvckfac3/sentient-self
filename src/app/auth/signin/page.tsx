@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { OAuthButtons } from '@/components/auth/oauth-buttons'
 import { useToast } from '@/hooks/use-toast'
 
 export default function SignInPage() {
@@ -55,21 +55,6 @@ export default function SignInPage() {
     }
   }
 
-  const handleOAuthSignIn = async (provider: string) => {
-    setIsLoading(true)
-    try {
-      await signIn(provider, { callbackUrl: '/chat' })
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive'
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -83,36 +68,7 @@ export default function SignInPage() {
             <CardTitle>Sign In</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* OAuth Providers */}
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => handleOAuthSignIn('google')}
-                disabled={isLoading}
-              >
-                Continue with Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => handleOAuthSignIn('apple')}
-                disabled={isLoading}
-              >
-                Continue with Apple
-              </Button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with email
-                </span>
-              </div>
-            </div>
+            <OAuthButtons callbackUrl="/chat" disabled={isLoading} />
 
             {/* Email/Password Form */}
             <form onSubmit={handleSubmit} className="space-y-4">

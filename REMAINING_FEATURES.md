@@ -1,6 +1,6 @@
 # 📋 Sentient Self - Remaining Features TODO
 
-**Last Updated:** January 13, 2026
+**Last Updated:** October 28, 2026
 **MVP Target:** Q1 2026
 **Current Status:** ~95% Complete
 
@@ -183,43 +183,26 @@
 
 ## 🔧 TECHNICAL DEBT
 
-- [ ] Add request rate limiting
-- [ ] Add input sanitization
-- [ ] Set up error monitoring (Sentry)
-- [ ] Add performance monitoring
+- [x] Add request rate limiting (`src/lib/rate-limit.ts`, Upstash-backed)
+- [x] Add input validation on chat and signup
+- [x] Set up error monitoring (Sentry, off until DSN is set)
+- [ ] Add performance monitoring (set `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`)
 - [ ] Optimize database queries
-- [ ] Add database indexes for common queries
-- [ ] Set up CI/CD pipeline
+- [x] Database indexes for common queries (in `0_init` migration)
+- [x] CI pipeline (`.github/workflows/ci.yml`)
 
 ---
 
 ## 📊 LAUNCH CHECKLIST
 
-### Pre-Launch
-- [x] All HIGH priority features complete
-- [x] Medical disclaimer implemented
-- [x] Crisis detection tested thoroughly
-- [x] Mobile responsive verified
-- [ ] Cross-browser testing (Chrome, Safari, Firefox)
-- [ ] Performance audit (Lighthouse)
-- [ ] Security audit
-- [ ] Privacy policy page
-- [ ] Terms of service page
+See [DEPLOYMENT.md](./DEPLOYMENT.md) §6 for the full pre-launch and smoke-test
+checklist.
 
-### Deployment
-- [ ] Environment variables set in Vercel
-- [ ] Stripe webhook updated to production URL
-- [ ] Database migrations applied (`npm run db:push`)
-- [ ] DNS configured
-- [ ] SSL certificate active
-- [ ] Error monitoring enabled
-- [ ] Analytics tracking enabled
-
-### Post-Launch
-- [ ] Monitor error rates
-- [ ] Gather user feedback
-- [ ] Track key metrics
-- [ ] Plan iteration based on data
+- [x] Privacy policy page (`/privacy`, draft pending legal review)
+- [x] Terms of service page (`/terms`, draft pending legal review)
+- [ ] Legal review of both, then turn off `LEGAL_REVIEW_PENDING`
+- [ ] Cross-browser and real-device testing
+- [ ] Production environment, Stripe live mode, DNS
 
 ---
 

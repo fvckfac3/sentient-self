@@ -3,20 +3,47 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Providers } from '@/components/providers'
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sentient Self - AI-Powered Therapeutic Growth Platform',
-  description: 'Conversation-first, AI-guided therapeutic self-development platform designed for recovering addicts and individuals seeking deep personal growth.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} - Understand Yourself Better`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} - Understand Yourself Better`,
+    description: SITE_DESCRIPTION,
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE_NAME} - Understand Yourself Better`,
+    description: SITE_DESCRIPTION,
+  },
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: 'black-translucent',
+  },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Pinch-zoom stays enabled for accessibility; inputs use 16px text on
+  // mobile so iOS doesn't auto-zoom when they're focused
   viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#020817' },
+  ],
 }
 
 export default function RootLayout({

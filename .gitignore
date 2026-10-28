@@ -52,8 +52,19 @@ tmp_rovodev_*
 dist/
 .cache/
 
-# Prisma
-/prisma/migrations/
 
 # Auto Claude data directory
 .auto-claude/
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Obsidian vault settings
+.obsidian/
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Sentry
+.env.sentry-build-plugin

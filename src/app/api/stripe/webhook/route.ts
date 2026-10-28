@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { stripe } from '@/lib/stripe'
+import { stripe, tierForSubscription } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -108,11 +108,8 @@ async function handleCheckoutSessionCompleted(
     // Get subscription details
     const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
-    // Determine tier based on subscription
-    let tier: 'FREE' | 'PREMIUM' | 'INSTITUTION' = 'PREMIUM'
-    if (session.metadata?.plan === 'institution') {
-      tier = 'INSTITUTION'
-    }
+    // Determine tier from the subscription's price
+    const tier = tierForSubscription(subscription)
 
     // Update user in database
     await prisma.user.update({
@@ -154,13 +151,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     let tier: 'FREE' | 'PREMIUM' | 'INSTITUTION' = 'FREE'
 
     if (subscription.status === 'active' || subscription.status === 'trialing') {
-      // Check metadata or price to determine plan type
-      const plan = subscription.metadata?.plan
-      if (plan === 'institution') {
-        tier = 'INSTITUTION'
-      } else {
-        tier = 'PREMIUM'
-      }
+      tier = tierForSubscription(subscription)
     } else if (
       subscription.status === 'canceled' ||
       subscription.status === 'unpaid' ||
