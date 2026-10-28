@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import {
     MessageCircle,
     BookOpen,
@@ -19,8 +20,16 @@ const navItems = [
     { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
+// Pages that belong to signed-out visitors or a focused flow
+const HIDDEN_ON = ['/auth', '/onboarding', '/privacy', '/terms']
+
 export function MobileBottomNav() {
     const pathname = usePathname()
+    const { status } = useSession()
+
+    if (status !== 'authenticated' || pathname === '/' || HIDDEN_ON.some(p => pathname.startsWith(p))) {
+        return null
+    }
 
     return (
         <nav className="bottom-nav md:hidden">

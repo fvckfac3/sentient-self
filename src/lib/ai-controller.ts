@@ -116,9 +116,22 @@ export class AIController {
         triggers: crisisCheck.triggers,
         action: crisisCheck.recommendedAction
       })
-      
-      // For medium/low, include safety awareness in AI response but don't block conversation
-      // This will be handled naturally by the AI with appropriate empathy
+    }
+
+    // Passive ideation gets a fixed safety check-in (asks directly about
+    // self-harm, gives 988) instead of relying on the model to raise it.
+    // The conversation stays open; low severity is left to the model.
+    if (crisisCheck.severity === 'medium') {
+      return {
+        content: getCrisisResponse('medium'),
+        newState: this.currentState,
+        crisisDetected: false,
+        crisisSeverity: 'medium',
+        metadata: {
+          crisisIndicators: crisisCheck.triggers,
+          stateTransitionReason: 'Passive ideation detected - safety check-in'
+        }
+      }
     }
 
     // Step 1: Reset decline flag if enough time has passed
@@ -210,7 +223,7 @@ export class AIController {
     }
 
     // Step 11: Validate state transition
-    if (!validTransitions.includes(response.newState)) {
+    if (response.newState !== this.currentState && !validTransitions.includes(response.newState)) {
       console.warn(`Invalid state transition from ${this.currentState} to ${response.newState}`)
       response.newState = this.currentState // Stay in current state
     }

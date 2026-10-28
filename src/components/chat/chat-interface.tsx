@@ -240,7 +240,7 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Crisis Banner - Shows at top when crisis detected */}
       <CrisisBanner 
         isVisible={showCrisisBanner || state === 'CRISIS_MODE'} 

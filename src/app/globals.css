@@ -391,10 +391,19 @@ html {
   }
 }
 
+.chat-viewport {
+  height: 100dvh;
+}
+
 /* Main content padding to account for bottom nav on mobile */
 @media (max-width: 767px) {
   .has-bottom-nav {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Chat fills the screen above the bottom nav; the message list scrolls */
+  .chat-viewport {
+    height: calc(100dvh - 72px - env(safe-area-inset-bottom, 0px));
   }
 }
 

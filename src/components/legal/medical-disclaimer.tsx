@@ -30,13 +30,13 @@ export function MedicalDisclaimer({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/50 backdrop-blur-sm"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          className="w-full max-w-2xl"
+          className="w-full max-w-2xl my-auto"
         >
           <Card className="border-2 border-amber-200 dark:border-amber-800 bg-white dark:bg-slate-900 shadow-2xl">
             <CardHeader className="border-b border-slate-200 dark:border-slate-700 pb-4">

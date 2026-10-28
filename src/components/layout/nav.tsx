@@ -68,8 +68,8 @@ export function Nav() {
               </Link>
             </div>
 
-            {/* Center Navigation Links */}
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            {/* Center Navigation Links - the bottom nav takes over on mobile */}
+            <div className="hidden md:flex items-center space-x-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -132,7 +132,7 @@ export function Nav() {
 
       {/* Pricing Modal */}
       {showPricing && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-card rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-foreground">Choose Your Plan</h2>
