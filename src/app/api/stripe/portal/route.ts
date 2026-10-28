@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { stripe, getOrCreateStripeCustomer } from '@/lib/stripe'
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 export const runtime = 'nodejs'
@@ -18,6 +19,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
+
+    const limited = await rateLimit({ key: `billing:${session.user.id}`, ...LIMITS.billing })
+    if (!limited.success) return rateLimitResponse(limited)
 
     // Get or create Stripe customer ID
     const customerId = await getOrCreateStripeCustomer(

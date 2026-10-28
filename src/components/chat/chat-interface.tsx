@@ -14,6 +14,8 @@ import { ConversationWithMessages } from '@/types'
 import { MODEL_CATALOG, type ModelId } from '@/lib/model-catalog'
 import { motion, AnimatePresence } from 'framer-motion'
 
+class RateLimitedError extends Error {}
+
 export function ChatInterface() {
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -34,7 +36,8 @@ export function ChatInterface() {
     setCurrentConversation,
     setState,
     setSuggestedExercises,
-    setLoading
+    setLoading,
+    resetConversation
   } = useConversationStore()
 
   const { user } = useAuthStore()
@@ -89,6 +92,14 @@ export function ChatInterface() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new RateLimitedError(data.error || 'Too many messages. Please wait a moment.')
+        }
+        if (response.status === 404 && currentConversation) {
+          // Saved conversation no longer exists or belongs to another account
+          resetConversation()
+          throw new Error(data.error || 'Conversation not found')
+        }
         if (data.requiresOnboarding) {
           window.location.href = '/onboarding'
           return
@@ -121,6 +132,8 @@ export function ChatInterface() {
           exercisesCompleted: 0
         }
         setCurrentConversation(newConversation)
+        // addMessage was a no-op before the conversation existed
+        addMessage(userMessage, 'USER')
       }
 
       // Add AI response to UI
@@ -143,7 +156,10 @@ export function ChatInterface() {
 
     } catch (error) {
       console.error('Error sending message:', error)
-      addMessage('Sorry, I encountered an error. Please try again.', 'AI')
+      addMessage(
+        error instanceof RateLimitedError ? error.message : 'Sorry, I encountered an error. Please try again.',
+        'AI'
+      )
     } finally {
       setIsTyping(false)
       setLoading(false)
@@ -278,7 +294,8 @@ export function ChatInterface() {
                   id: msg.id,
                   role: msg.role === 'USER' ? 'user' : 'assistant',
                   content: msg.content,
-                  createdAt: msg.createdAt.toISOString(),
+                  // Rehydrated from localStorage, createdAt is a string
+                  createdAt: new Date(msg.createdAt).toISOString(),
                 }}
                 isLast={index === currentConversation.messages.length - 1}
               />

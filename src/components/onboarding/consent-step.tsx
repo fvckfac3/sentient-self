@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { OnboardingStep } from './onboarding-step'
 import { AlertTriangle, Check, Loader2 } from 'lucide-react'
 
@@ -87,6 +88,12 @@ export function ConsentStep({ onNext, onBack }: ConsentStepProps) {
                             <li>• Your data is never used for AI training</li>
                             <li>• You can export or delete your data anytime</li>
                         </ul>
+                        <p className="text-muted-foreground mt-2">
+                            Read the full{' '}
+                            <Link href="/privacy" target="_blank" className="underline hover:text-foreground">Privacy Policy</Link>
+                            {' '}and{' '}
+                            <Link href="/terms" target="_blank" className="underline hover:text-foreground">Terms of Service</Link>.
+                        </p>
                     </div>
                 </div>
 

@@ -33,7 +33,9 @@ export default function SignInPage() {
       if (result?.error) {
         toast({
           title: 'Sign in failed',
-          description: 'Invalid email or password',
+          // NextAuth returns "CredentialsSignin" for a bad password and the
+          // thrown message (e.g. the rate-limit notice) otherwise
+          description: result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error,
           variant: 'destructive'
         })
       } else {

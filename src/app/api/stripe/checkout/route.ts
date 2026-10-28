@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { stripe, getOrCreateStripeCustomer, STRIPE_PREMIUM_PRICE_ID, STRIPE_INSTITUTION_PRICE_ID } from '@/lib/stripe'
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
@@ -16,6 +17,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
+
+    const limited = await rateLimit({ key: `billing:${session.user.id}`, ...LIMITS.billing })
+    if (!limited.success) return rateLimitResponse(limited)
 
     // Parse request body
     const body = await request.json()

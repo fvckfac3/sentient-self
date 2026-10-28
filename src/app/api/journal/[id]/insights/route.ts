@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateJournalInsights } from '@/lib/ai-insights'
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 export const runtime = 'nodejs'
@@ -21,6 +22,9 @@ export async function POST(
         { status: 401 }
       )
     }
+
+    const limited = await rateLimit({ key: `ai-insight:${session.user.id}`, ...LIMITS.aiInsight })
+    if (!limited.success) return rateLimitResponse(limited)
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

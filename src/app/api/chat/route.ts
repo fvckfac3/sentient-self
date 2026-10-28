@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { AIController } from '@/lib/ai-controller'
 import { ConversationState } from '@/types'
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 const MAX_MESSAGE_LENGTH = 8000
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const burst = await rateLimit({ key: `chat:burst:${session.user.id}`, ...LIMITS.chatBurst })
+    if (!burst.success) return rateLimitResponse(burst, 'You are sending messages very quickly. Please wait a moment.')
+    const daily = await rateLimit({ key: `chat:daily:${session.user.id}`, ...LIMITS.chatDaily })
+    if (!daily.success) return rateLimitResponse(daily, "You've reached today's message limit. Please come back tomorrow.")
 
     const { message, conversationId, exerciseId, modelId } = await request.json()
 

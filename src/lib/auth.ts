@@ -5,6 +5,7 @@ import AppleProvider from 'next-auth/providers/apple'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { rateLimit, LIMITS } from '@/lib/rate-limit'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -28,14 +29,27 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           return null
         }
 
-        const user = await prisma.user.findUnique({
+        const email = credentials.email.trim().toLowerCase()
+
+        // Throttle password guessing per account and per IP
+        const forwarded = req?.headers?.['x-forwarded-for']
+        const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0].trim() || 'unknown'
+        const [byEmail, byIp] = await Promise.all([
+          rateLimit({ key: `login:email:${email}`, ...LIMITS.login }),
+          rateLimit({ key: `login:ip:${ip}`, limit: LIMITS.login.limit * 3, windowMs: LIMITS.login.windowMs }),
+        ])
+        if (!byEmail.success || !byIp.success) {
+          throw new Error('Too many sign-in attempts. Please wait 15 minutes and try again.')
+        }
+
+        const user = await prisma.user.findFirst({
           where: {
-            email: credentials.email
+            email: { equals: email, mode: 'insensitive' }
           },
           include: {
             baselineProfile: true

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 /**
@@ -20,6 +21,9 @@ export async function GET(request: Request) {
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
+
+        const limited = await rateLimit({ key: `export:${session.user.id}`, ...LIMITS.export })
+        if (!limited.success) return rateLimitResponse(limited)
 
         const { searchParams } = new URL(request.url)
         const format = searchParams.get('format') || 'json'

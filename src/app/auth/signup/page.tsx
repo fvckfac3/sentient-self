@@ -251,6 +251,13 @@ export default function SignUpPage() {
               </Button>
             </form>
 
+            <p className="text-center text-xs text-muted-foreground">
+              By creating an account, you confirm you are 18 or older and agree to our{' '}
+              <Link href="/terms" className="underline hover:text-foreground">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.
+            </p>
+
             <div className="text-center text-sm">
               <span className="text-muted-foreground">Already have an account? </span>
               <Link href="/auth/signin" className="text-primary hover:underline">

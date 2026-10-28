@@ -3,16 +3,23 @@ import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
+import { rateLimit, rateLimitResponse, getClientIp, LIMITS } from '@/lib/rate-limit'
 export const dynamic = 'force-dynamic'
 
 const signupSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().optional(),
+  email: z.string().trim().toLowerCase().email('Invalid email address'),
+  // bcrypt only uses the first 72 bytes
+  password: z.string().min(8, 'Password must be at least 8 characters').max(72, 'Password must be at most 72 characters'),
+  name: z.string().trim().max(100).optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
+    const limited = await rateLimit({ key: `signup:${getClientIp(request.headers)}`, ...LIMITS.signup })
+    if (!limited.success) {
+      return rateLimitResponse(limited, 'Too many sign-up attempts. Please try again later.')
+    }
+
     const body = await request.json()
     
     // Validate input
@@ -27,8 +34,8 @@ export async function POST(request: NextRequest) {
     const { email, password, name } = validation.data
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: { email: { equals: email, mode: 'insensitive' } }
     })
 
     if (existingUser) {

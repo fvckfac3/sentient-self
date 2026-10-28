@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { signOutAndClear } from "@/lib/sign-out";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -163,7 +164,7 @@ export function MainNav() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    onClick={() => signOut({ callbackUrl: "/" })}
+                    onClick={() => signOutAndClear()}
                     className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 dark:focus:text-red-400"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
@@ -275,7 +276,7 @@ export function MainNav() {
                     {/* Sign Out */}
                     <Button
                       variant="ghost"
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={() => signOutAndClear()}
                       className="w-full justify-start min-h-[48px] gap-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400"
                     >
                       <LogOut className="w-5 h-5" />
