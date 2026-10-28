@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { stripe, getOrCreateStripeCustomer, STRIPE_PREMIUM_PRICE_ID, STRIPE_INSTITUTION_PRICE_ID } from '@/lib/stripe'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user

@@ -17,42 +17,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { AnimatedBackground } from '@/components/chat/animated-background'
 import { Nav } from '@/components/layout/nav'
+import { MODEL_CATALOG, DEFAULT_FREE_MODEL, type ModelId } from '@/lib/model-catalog'
 
-const AI_MODELS = [
-    {
-        id: 'deepseek-chat',
-        name: 'DeepSeek R1',
-        description: 'Fast, capable, and free for all users',
-        tier: 'FREE',
-        speed: 'Fast'
-    },
-    {
-        id: 'gpt-4o',
-        name: 'GPT-4o',
-        description: 'OpenAI\'s most capable model',
-        tier: 'PREMIUM',
-        speed: 'Fast'
-    },
-    {
-        id: 'claude-3-5-sonnet-20241022',
-        name: 'Claude 3.5 Sonnet',
-        description: 'Anthropic\'s balanced model',
-        tier: 'PREMIUM',
-        speed: 'Medium'
-    },
-    {
-        id: 'gemini-1.5-pro',
-        name: 'Gemini 1.5 Pro',
-        description: 'Google\'s advanced reasoning model',
-        tier: 'PREMIUM',
-        speed: 'Fast'
-    },
-]
+const AI_MODELS = (Object.keys(MODEL_CATALOG) as ModelId[]).map(id => ({
+    id,
+    ...MODEL_CATALOG[id]
+}))
 
 export default function AIPreferencesPage() {
     const { data: session, status } = useSession()
     const router = useRouter()
-    const [selectedModel, setSelectedModel] = useState('deepseek-chat')
+    const [selectedModel, setSelectedModel] = useState<ModelId>(DEFAULT_FREE_MODEL)
     const [isSaving, setIsSaving] = useState(false)
     const [saveSuccess, setSaveSuccess] = useState(false)
 
@@ -63,10 +38,14 @@ export default function AIPreferencesPage() {
     }, [status, router])
 
     useEffect(() => {
-        if (session?.user?.preferredModel) {
-            setSelectedModel(session.user.preferredModel)
-        }
-    }, [session?.user?.preferredModel])
+        if (status !== 'authenticated') return
+        fetch('/api/user/preferences')
+            .then(res => (res.ok ? res.json() : null))
+            .then(data => {
+                if (data?.preferredModel) setSelectedModel(data.preferredModel)
+            })
+            .catch(error => console.error('Error loading preferences:', error))
+    }, [status])
 
     const handleSave = async () => {
         setIsSaving(true)
@@ -173,7 +152,9 @@ export default function AIPreferencesPage() {
                                                         )}
                                                     </div>
                                                     <p className="text-sm text-muted-foreground">{model.description}</p>
-                                                    <p className="text-xs text-muted-foreground mt-1">Speed: {model.speed}</p>
+                                                    {model.bestFor && (
+                                                        <p className="text-xs text-muted-foreground mt-1">Best for: {model.bestFor}</p>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-primary bg-primary' : 'border-muted-foreground'
@@ -202,7 +183,7 @@ export default function AIPreferencesPage() {
                                     <div>
                                         <p className="font-medium">Upgrade to Premium</p>
                                         <p className="text-sm text-muted-foreground">
-                                            Unlock access to GPT-4o, Claude, Gemini, and more
+                                            Unlock access to Claude, GPT, Gemini, and more
                                         </p>
                                     </div>
                                 </div>

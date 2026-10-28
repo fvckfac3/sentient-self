@@ -4,6 +4,8 @@ import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export const runtime = 'nodejs'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!

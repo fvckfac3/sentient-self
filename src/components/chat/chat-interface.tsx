@@ -8,11 +8,10 @@ import { ChatInput } from './chat-input'
 import { ChatHeader } from './chat-header'
 import { TypingIndicator } from './typing-indicator'
 import { ExerciseCardAnimated } from './exercise-card-animated'
-import { ModelSelector } from './model-selector'
 import { ExerciseProgress } from './exercise-progress'
 import { CrisisBanner } from './crisis-banner'
 import { ConversationWithMessages } from '@/types'
-import { type ModelId } from '@/lib/models'
+import { MODEL_CATALOG, type ModelId } from '@/lib/model-catalog'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function ChatInterface() {
@@ -20,7 +19,8 @@ export function ChatInterface() {
   const [isTyping, setIsTyping] = useState(false)
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null)
   const [exerciseData, setExerciseData] = useState<any>(null)
-  const [selectedModel, setSelectedModel] = useState<ModelId>('deepseek-chat')
+  // Unset until loaded; the server then falls back to the user's saved preference
+  const [selectedModel, setSelectedModel] = useState<ModelId | null>(null)
   const [showCrisisBanner, setShowCrisisBanner] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -52,10 +52,21 @@ export function ChatInterface() {
     inputRef.current?.focus()
   }, [])
 
-  const sendMessage = async () => {
-    if (!message.trim() || isLoading) return
+  useEffect(() => {
+    fetch('/api/user/preferences')
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data?.preferredModel) setSelectedModel(data.preferredModel)
+      })
+      .catch(error => console.error('Error loading model preference:', error))
+  }, [])
 
-    const userMessage = message.trim()
+  // `text` lets callers send a canned reply without waiting for `message`
+  // state to update (a setTimeout would still see the old value)
+  const sendMessage = async (text?: string) => {
+    const userMessage = (text ?? message).trim()
+    if (!userMessage || isLoading) return
+
     setMessage('')
     setIsTyping(true)
     setLoading(true)
@@ -71,7 +82,7 @@ export function ChatInterface() {
           message: userMessage,
           conversationId: currentConversation?.id,
           exerciseId: activeExerciseId,
-          modelId: selectedModel
+          modelId: selectedModel ?? undefined
         })
       })
 
@@ -171,11 +182,10 @@ export function ChatInterface() {
       ? `Thanks for the suggestions, but I'd prefer to keep talking.`
       : `I'd like to try a custom exercise.`
     
-    setMessage(responseMessage)
     setSuggestedExercises([])
     
     // Send the response
-    setTimeout(() => sendMessage(), 100)
+    sendMessage(responseMessage)
   }
 
   const handleStartExercise = async (exerciseId: string) => {
@@ -190,8 +200,7 @@ export function ChatInterface() {
         setSuggestedExercises([])
         
         // Send acceptance message to start exercise
-        setMessage("Yes, I'd like to try this exercise.")
-        setTimeout(() => sendMessage(), 100)
+        sendMessage("Yes, I'd like to try this exercise.")
       }
     } catch (error) {
       console.error('Error loading exercise:', error)
@@ -224,9 +233,7 @@ export function ChatInterface() {
 
       {/* Header */}
       <ChatHeader
-        modelName={selectedModel === 'claude-3-5-sonnet' ? 'Claude 3.5 Sonnet' : 
-                   selectedModel === 'gpt-4o' ? 'GPT-4o' : 
-                   'DeepSeek Chat'}
+        modelName={selectedModel ? MODEL_CATALOG[selectedModel]?.name ?? '' : ''}
         userName={user?.email?.split('@')[0]}
         state={state}
         onSettingsClick={() => {

@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma'
 import { AIController } from '@/lib/ai-controller'
 import { ConversationState } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
+const MAX_MESSAGE_LENGTH = 8000
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -14,17 +18,28 @@ export async function POST(request: NextRequest) {
 
     const { message, conversationId, exerciseId, modelId } = await request.json()
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== 'string' || !message.trim()) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
-    // Get or create conversation
-    let conversation = conversationId 
-      ? await prisma.conversation.findUnique({
-          where: { id: conversationId },
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return NextResponse.json(
+        { error: `Message is too long (max ${MAX_MESSAGE_LENGTH} characters)` },
+        { status: 400 }
+      )
+    }
+
+    // Get or create conversation - only ever load the caller's own conversation
+    let conversation = conversationId
+      ? await prisma.conversation.findFirst({
+          where: { id: String(conversationId), userId: session.user.id },
           include: { messages: { orderBy: { createdAt: 'asc' } } }
         })
       : null
+
+    if (conversationId && !conversation) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+    }
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
@@ -96,7 +111,7 @@ export async function POST(request: NextRequest) {
       currentState: conversation.state,
       recentMessages,
       exerciseContext,
-      modelId
+      modelId: typeof modelId === 'string' ? modelId : undefined
     })
 
     // Generate AI response

@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { getActiveExercise, cancelExercise } from '@/lib/exercise-facilitator'
+
+export const dynamic = 'force-dynamic'
+
+async function ownsConversation(conversationId: string, userId: string) {
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, userId },
+    select: { id: true }
+  })
+  return conversation !== null
+}
 
 /**
  * GET - Get active exercise for conversation
@@ -9,7 +20,7 @@ import { getActiveExercise, cancelExercise } from '@/lib/exercise-facilitator'
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -18,6 +29,10 @@ export async function GET(req: NextRequest) {
 
     if (!conversationId) {
       return NextResponse.json({ error: 'Conversation ID required' }, { status: 400 })
+    }
+
+    if (!(await ownsConversation(conversationId, session.user.id))) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
     }
 
     const exercise = await getActiveExercise(conversationId)
@@ -41,7 +56,7 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -50,6 +65,10 @@ export async function DELETE(req: NextRequest) {
 
     if (!conversationId) {
       return NextResponse.json({ error: 'Conversation ID required' }, { status: 400 })
+    }
+
+    if (!(await ownsConversation(conversationId, session.user.id))) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
     }
 
     await cancelExercise(conversationId)

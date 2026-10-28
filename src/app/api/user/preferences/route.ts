@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { canUseModel, isModelId, resolveModelId } from "@/lib/model-catalog"
+
+export const dynamic = 'force-dynamic'
 
 /**
  * PUT /api/user/preferences
@@ -18,18 +21,7 @@ export async function PUT(request: Request) {
         const body = await request.json()
         const { preferredModel } = body
 
-        // Validate the model ID
-        const validModels = [
-            'deepseek-chat',
-            'gpt-4o',
-            'gpt-4o-mini',
-            'claude-3-5-sonnet-20241022',
-            'claude-3-opus-20240229',
-            'gemini-1.5-pro',
-            'gemini-1.5-flash',
-        ]
-
-        if (preferredModel && !validModels.includes(preferredModel)) {
+        if (preferredModel !== null && !isModelId(preferredModel)) {
             return NextResponse.json({ error: "Invalid model ID" }, { status: 400 })
         }
 
@@ -39,11 +31,7 @@ export async function PUT(request: Request) {
             select: { subscriptionTier: true }
         })
 
-        const premiumModels = ['gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet-20241022', 'claude-3-opus-20240229', 'gemini-1.5-pro', 'gemini-1.5-flash']
-        const isPremiumModel = premiumModels.includes(preferredModel)
-        const canUsePremium = user?.subscriptionTier === 'PREMIUM' || user?.subscriptionTier === 'INSTITUTION'
-
-        if (isPremiumModel && !canUsePremium) {
+        if (preferredModel && !canUseModel(preferredModel, user?.subscriptionTier)) {
             return NextResponse.json({ error: "Premium subscription required for this model" }, { status: 403 })
         }
 
@@ -84,7 +72,7 @@ export async function GET() {
         })
 
         return NextResponse.json({
-            preferredModel: user?.preferredModel || 'deepseek-chat',
+            preferredModel: resolveModelId([user?.preferredModel], user?.subscriptionTier),
             subscriptionTier: user?.subscriptionTier || 'FREE'
         })
     } catch (error) {
