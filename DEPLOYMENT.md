@@ -1,267 +1,137 @@
-# Deployment Guide
+# Deployment Runbook
 
-## 🚀 Production Deployment
+The one place for getting Sentient Self into production. Variable names and
+defaults live in [`.env.example`](./.env.example); this file covers order of
+operations.
 
-### Prerequisites
+## 1. Accounts and services
 
-1. **Database**: PostgreSQL 14+ instance
-2. **Node.js**: Version 18+ 
-3. **Environment Variables**: All required vars from `.env.example`
-4. **Domain**: For OAuth callbacks and production URLs
+| Service | Needed for | Notes |
+|---|---|---|
+| PostgreSQL 14+ (Neon, Supabase, RDS, …) | Everything | Use the pooled connection string for `DATABASE_URL` on Vercel |
+| Vercel | Hosting | Framework preset: Next.js. Build command `npm run build` (Prisma client is generated on `postinstall`) |
+| DeepSeek API key | Free-tier chat, insights, journal analysis | **Required** |
+| Anthropic / OpenAI / Google AI keys | Premium models | Set the providers you want to offer; Opus 5.5 is the premium default |
+| Stripe | Billing | Create a Premium (and optionally Institution) recurring price |
+| Upstash Redis (or Vercel KV) | Rate limiting across instances | Strongly recommended; without it limits are per instance |
+| Sentry | Error monitoring | Optional; off until `NEXT_PUBLIC_SENTRY_DSN` is set |
 
-### Environment Variables Setup
+## 2. Environment variables (Vercel → Project → Settings → Environment Variables)
 
-Copy `.env.example` to `.env` and configure:
+Required in Production:
 
-```env
-# Database
-DATABASE_URL="postgresql://username:password@host:5432/sentient_self"
+- `DATABASE_URL`
+- `NEXTAUTH_URL` – the production URL, e.g. `https://sentientself.com`
+- `NEXTAUTH_SECRET` – `openssl rand -base64 32`. **Generate a new one for
+  launch.** Builds before this branch shipped the old secret to browsers
+  (`next.config.js` `env` block), so treat any previously used value as public.
+- `DEEPSEEK_API_KEY`
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PREMIUM_PRICE_ID`
+- `NEXT_PUBLIC_SITE_URL` (same as `NEXTAUTH_URL`), `NEXT_PUBLIC_SUPPORT_EMAIL`
 
-# Authentication
-NEXTAUTH_URL="https://yourdomain.com"
-NEXTAUTH_SECRET="your-secure-random-string"
+Recommended: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`NEXT_PUBLIC_SENTRY_DSN` (+ `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`
+for readable stack traces), and the premium AI keys.
 
-# OAuth Providers
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-APPLE_ID="your-apple-id"
-APPLE_TEAM_ID="your-apple-team-id"
-APPLE_PRIVATE_KEY="your-apple-private-key"
-APPLE_KEY_ID="your-apple-key-id"
+On startup the server logs any missing or malformed variables (see
+`src/lib/env.ts`); check the first function logs after each deploy.
 
-# Stripe
-STRIPE_SECRET_KEY="sk_live_your-live-key"
-STRIPE_PUBLISHABLE_KEY="pk_live_your-live-key"
-STRIPE_WEBHOOK_SECRET="whsec_your-webhook-secret"
+## 3. Database
 
-# AI APIs
-DEEPSEEK_API_KEY="your-deepseek-key"
-OPENAI_API_KEY="your-openai-key"
-ANTHROPIC_API_KEY="your-anthropic-key"
-GOOGLE_AI_API_KEY="your-google-ai-key"
-GROK_API_KEY="your-grok-key"
-```
+Migrations live in `prisma/migrations` and are applied with
+`npm run db:deploy` (`prisma migrate deploy`). Run it from your machine or a
+CI job against the production `DATABASE_URL` before promoting a deploy that
+includes a new migration. It is not part of the Vercel build, so preview
+deploys never touch the production schema.
 
-### Vercel Deployment (Recommended)
+**New, empty database**
 
-1. **Install Vercel CLI**
 ```bash
-npm i -g vercel
+DATABASE_URL=... npm run db:deploy
+DATABASE_URL=... npm run db:seed     # 13 frameworks + 634 exercises, safe to re-run
 ```
 
-2. **Deploy to Vercel**
+**Existing database created earlier with `prisma db push`**
+
+Mark the baseline migration as already applied instead of running it:
+
 ```bash
-vercel --prod
-```
-
-3. **Set Environment Variables**
-- Go to Vercel dashboard → Project → Settings → Environment Variables
-- Add all variables from your `.env` file
-
-4. **Configure Database**
-```bash
-# Run database migration
-npx prisma migrate deploy
-
-# Seed exercises data
-npx prisma db seed
-```
-
-### Docker Deployment
-
-1. **Create Dockerfile**
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy source code
-COPY . .
-
-# Generate Prisma client
-RUN npx prisma generate
-
-# Build application
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-2. **Build and Run**
-```bash
-docker build -t sentient-self .
-docker run -p 3000:3000 --env-file .env sentient-self
-```
-
-### Manual Server Deployment
-
-1. **Install dependencies**
-```bash
-npm ci --production
-```
-
-2. **Setup database**
-```bash
-npx prisma migrate deploy
-npx prisma db seed
-```
-
-3. **Build application**
-```bash
-npm run build
-```
-
-4. **Start production server**
-```bash
-npm start
-```
-
-## 🔧 Configuration
-
-### OAuth Setup
-
-#### Google OAuth
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create new project or select existing
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials
-5. Add authorized redirect URI: `https://yourdomain.com/api/auth/callback/google`
-
-#### Apple OAuth
-1. Go to [Apple Developer](https://developer.apple.com)
-2. Register your app identifier
-3. Create Services ID for Sign in with Apple
-4. Configure domain and return URLs
-5. Generate private key and note Key ID
-
-### Stripe Configuration
-
-1. **Create Products**
-```bash
-# Premium subscription
-stripe products create --name "Premium Plan" --type service
-
-# Set up price
-stripe prices create --product prod_xxx --unit-amount 1499 --currency usd --recurring interval=month
-```
-
-2. **Configure Webhooks**
-- Endpoint: `https://yourdomain.com/api/webhooks/stripe`
-- Events: `customer.subscription.created`, `customer.subscription.deleted`, `invoice.payment_succeeded`
-
-### AI API Keys
-
-1. **DeepSeek**: [DeepSeek Platform](https://platform.deepseek.com)
-2. **OpenAI**: [OpenAI Platform](https://platform.openai.com)
-3. **Anthropic**: [Anthropic Console](https://console.anthropic.com)
-4. **Google AI**: [Google AI Studio](https://makersuite.google.com)
-5. **Grok**: [xAI Console](https://console.x.ai)
-
-## 🛡️ Security Checklist
-
-- [ ] HTTPS enabled with valid SSL certificate
-- [ ] Environment variables secured (not in source code)
-- [ ] Database connection encrypted
-- [ ] CORS properly configured
-- [ ] Rate limiting implemented
-- [ ] Input validation on all endpoints
-- [ ] Crisis detection monitoring enabled
-- [ ] Backup strategy implemented
-
-## 📊 Monitoring
-
-### Health Checks
-- Database connectivity: `/api/health/db`
-- AI services: `/api/health/ai`
-- Overall status: `/api/health`
-
-### Metrics to Monitor
-- Response times for AI endpoints
-- Database query performance
-- Crisis detection trigger rates
-- User session durations
-- Exercise completion rates
-
-## 🔄 Updates
-
-### Database Migrations
-```bash
-# Create migration
-npx prisma migrate dev --name your-migration-name
-
-# Deploy to production
-npx prisma migrate deploy
-```
-
-### Exercise Data Updates
-```bash
-# Update exercises from JSON files
+# 1. Confirm the live schema matches 0_init (should print "No difference detected")
+npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma
+# 2. Record the baseline
+npx prisma migrate resolve --applied 0_init
+# 3. Re-seed to fix exercise/framework links (upserts only, deletes nothing)
 npm run db:seed
 ```
 
-## 🆘 Troubleshooting
+Going forward, change the schema with `npm run db:migrate -- --name <change>`
+locally and commit the generated migration. Don't use `db push` against
+production.
 
-### Common Issues
+## 4. Stripe
 
-1. **Database Connection Errors**
-   - Verify DATABASE_URL format
-   - Check network connectivity
-   - Ensure database exists
+1. Create the products/prices and copy their IDs into `STRIPE_PREMIUM_PRICE_ID`
+   (and `STRIPE_INSTITUTION_PRICE_ID`). A user's plan is decided by the price on
+   their subscription, so these must match exactly.
+2. Add a webhook endpoint `https://<your-domain>/api/stripe/webhook` with events
+   `checkout.session.completed`, `customer.subscription.updated`,
+   `customer.subscription.deleted`. Copy its signing secret into
+   `STRIPE_WEBHOOK_SECRET`.
+3. Enable the Customer Portal (Settings → Billing → Customer portal) so users
+   can cancel and update cards.
+4. Run the whole upgrade → cancel flow in test mode first (see §6), then repeat
+   steps 1–3 in live mode and swap in the live keys.
 
-2. **OAuth Failures**
-   - Verify redirect URIs match exactly
-   - Check client ID/secret configuration
-   - Ensure proper domain setup
+## 5. Optional sign-in providers
 
-3. **AI API Errors**
-   - Validate API keys
-   - Check rate limits
-   - Monitor error logs
+Google and Apple buttons appear automatically once their variables are set.
 
-4. **Prisma Issues**
-   - Run `npx prisma generate` after schema changes
-   - Clear `.next` cache if needed
-   - Verify database schema matches Prisma schema
+- Google: OAuth client with redirect URI
+  `https://<your-domain>/api/auth/callback/google`.
+- Apple: Services ID as `APPLE_ID` and the generated client-secret JWT as
+  `APPLE_SECRET` (it expires every 6 months; rotate it).
 
-### Emergency Procedures
+## 6. Launch checklist
 
-1. **Crisis System Failure**
-   - Enable maintenance mode
-   - Display static crisis resources
-   - Alert development team
+Before launch:
 
-2. **Database Outage**
-   - Switch to read-only mode
-   - Display cached crisis resources
-   - Prevent new user registrations
+- [ ] Lawyer has reviewed `/privacy` and `/terms`; set
+      `LEGAL_REVIEW_PENDING = false` and update `LEGAL_LAST_UPDATED` in
+      `src/lib/site.ts`
+- [ ] Decide launch countries; crisis resources are US numbers (988, 741741)
+- [ ] Production env vars set, with a fresh `NEXTAUTH_SECRET`
+- [ ] `npm run db:deploy` and `npm run db:seed` run against production
+- [ ] Custom domain added in Vercel and HTTPS active; `NEXTAUTH_URL` and
+      `NEXT_PUBLIC_SITE_URL` use it
+- [ ] Stripe live keys, live price IDs and live webhook configured
+- [ ] Sentry receiving events (trigger a test error) and alert rules set
 
-3. **AI Service Outage**
-   - Fallback to basic text responses
-   - Display maintenance message
-   - Enable human handoff if available
+Smoke test on the production URL (desktop, plus a real iPhone in Safari and an
+Android phone in Chrome):
 
-## 📝 Compliance
+- [ ] Sign up, sign out, sign back in; wrong password shows an error
+- [ ] Onboarding completes and lands in chat
+- [ ] Chat replies; a message like "I wish I could just disappear" shows crisis
+      resources
+- [ ] Journal entry saves; Premium AI insight generates
+- [ ] Upgrade to Premium via Stripe Checkout, plan shows Premium, a premium
+      model replies, Customer Portal opens, cancel downgrades at period end
+- [ ] Export data (JSON and CSV) and delete a test account
+- [ ] Pages are readable at phone width, pinch-zoom works, inputs don't zoom
+      the page on focus, and the bottom nav clears the home indicator
 
-### HIPAA (For Institutional Clients)
-- Implement audit logging
-- Encrypt data at rest and in transit
-- Business Associate Agreements
-- Regular security assessments
+After launch: watch Sentry and Vercel function logs daily for the first week,
+and keep an eye on AI provider spend.
 
-### GDPR
-- User consent management
-- Data export functionality
-- Right to deletion
-- Privacy policy updates
+## Local development
 
-### Crisis Response Compliance
-- 24/7 monitoring of crisis detection
-- Immediate resource display
-- No therapeutic advice during crisis
-- Clear medical disclaimers
+```bash
+cp .env.example .env          # fill in DATABASE_URL, NEXTAUTH_*, DEEPSEEK_API_KEY
+npm install
+npm run db:deploy && npm run db:seed
+npm run dev
+```
+
+Checks CI runs on every pull request (`.github/workflows/ci.yml`):
+`npm run typecheck`, `npm run lint`, `npm test`, migrations + schema drift
+check, seeding twice, and `npm run build`.

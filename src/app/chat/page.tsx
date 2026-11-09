@@ -53,7 +53,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="chat-viewport flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
       <AnimatedBackground />
       <Nav />
       <ChatInterface />

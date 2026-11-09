@@ -6,7 +6,9 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 import { Brain, Heart, Shield, Users } from 'lucide-react'
+import { SUPPORT_EMAIL } from '@/lib/site'
 
 export default function HomePage() {
   const { data: session, status } = useSession()
@@ -131,6 +133,15 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </div>
+
+      <footer className="container mx-auto px-4 pb-24 md:pb-10 text-center text-sm text-muted-foreground">
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-foreground">Terms of Service</Link>
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-foreground">Contact</a>
+        </nav>
+        <p className="mt-3">In crisis? Call or text 988 (US) or your local emergency number.</p>
+      </footer>
     </div>
   )
 }

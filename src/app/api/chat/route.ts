@@ -5,6 +5,11 @@ import { prisma } from '@/lib/prisma'
 import { AIController } from '@/lib/ai-controller'
 import { ConversationState } from '@/types'
 
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
+export const dynamic = 'force-dynamic'
+
+const MAX_MESSAGE_LENGTH = 8000
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -12,19 +17,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const burst = await rateLimit({ key: `chat:burst:${session.user.id}`, ...LIMITS.chatBurst })
+    if (!burst.success) return rateLimitResponse(burst, 'You are sending messages very quickly. Please wait a moment.')
+    const daily = await rateLimit({ key: `chat:daily:${session.user.id}`, ...LIMITS.chatDaily })
+    if (!daily.success) return rateLimitResponse(daily, "You've reached today's message limit. Please come back tomorrow.")
+
     const { message, conversationId, exerciseId, modelId } = await request.json()
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== 'string' || !message.trim()) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
-    // Get or create conversation
-    let conversation = conversationId 
-      ? await prisma.conversation.findUnique({
-          where: { id: conversationId },
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return NextResponse.json(
+        { error: `Message is too long (max ${MAX_MESSAGE_LENGTH} characters)` },
+        { status: 400 }
+      )
+    }
+
+    // Get or create conversation - only ever load the caller's own conversation
+    let conversation = conversationId
+      ? await prisma.conversation.findFirst({
+          where: { id: String(conversationId), userId: session.user.id },
           include: { messages: { orderBy: { createdAt: 'asc' } } }
         })
       : null
+
+    if (conversationId && !conversation) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+    }
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
@@ -96,7 +117,7 @@ export async function POST(request: NextRequest) {
       currentState: conversation.state,
       recentMessages,
       exerciseContext,
-      modelId
+      modelId: typeof modelId === 'string' ? modelId : undefined
     })
 
     // Generate AI response

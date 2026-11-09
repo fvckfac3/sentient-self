@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { signOutAndClear } from '@/lib/sign-out'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -103,7 +104,7 @@ export default function PrivacySettingsPage() {
             }
 
             // Sign out and redirect to home
-            await signOut({ callbackUrl: '/' })
+            await signOutAndClear()
         } catch (error) {
             console.error('Delete error:', error)
             setDeleteError(error instanceof Error ? error.message : 'Failed to delete account')
@@ -135,7 +136,10 @@ export default function PrivacySettingsPage() {
                         <h1 className="text-3xl font-bold">Privacy & Safety</h1>
                     </div>
                     <p className="text-muted-foreground">
-                        Manage your data, privacy settings, and account
+                        Manage your data, privacy settings, and account. Read our{' '}
+                        <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>
+                        {' '}and{' '}
+                        <Link href="/terms" className="underline hover:text-foreground">Terms of Service</Link>.
                     </p>
                 </motion.div>
 

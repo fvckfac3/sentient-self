@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { modelRegistry, ModelId, type ModelConfig } from '@/lib/models'
+import { MODEL_CATALOG as modelRegistry, type ModelId, type ModelInfo as ModelConfig } from '@/lib/model-catalog'
 import { ChevronDown, Sparkles, Lock } from 'lucide-react'
 
 interface ModelSelectorProps {

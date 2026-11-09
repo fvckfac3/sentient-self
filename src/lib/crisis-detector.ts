@@ -33,6 +33,7 @@ const HIGH_PATTERNS = [
   // Hopelessness
   /\b(no (hope|point|way out)|hopeless|nothing (matters|will help))\b/i,
   /\b(everyone would be better off|no one (cares|would miss me))\b/i,
+  /\bwish I (was|were) dead\b/i,
   /\b(can'?t see a (future|way forward)|trapped|no escape)\b/i,
   /\b(no point (in|to) (going on|living|continuing))\b/i,
   /\b(don'?t see (any|the) point)\b/i,
@@ -44,8 +45,9 @@ const HIGH_PATTERNS = [
 
 const MEDIUM_PATTERNS = [
   // Passive ideation
-  /\b(wish I (wasn'?t here|didn'?t exist|could disappear))\b/i,
-  /\b(don'?t (care|want to) wake up|sleep forever)\b/i,
+  /\b(wish I (wasn'?t here|didn'?t exist|(was|were|had) never (been )?born))\b/i,
+  /\bwish I (could|would) (just |simply )?(disappear|vanish|fade away|not wake up)\b/i,
+  /\b(don'?t (care|want to) (if I )?wake up|sleep forever|never wake up)\b/i,
   
   // Severe emotional distress
   /\b(hate myself|worthless|disgusting|broken beyond repair)\b/i,

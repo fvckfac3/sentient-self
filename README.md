@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="./assets/sentient-self-logo.png" alt="Sentient Self Logo" width="400"/>
+  <img src="./src/app/icon.svg" alt="Sentient Self logo" width="120"/>
 
   # Sentient Self
 
@@ -44,8 +44,8 @@ cp .env.example .env
 
 3. **Set up database**
 ```bash
-npm run db:push
-npm run db:seed
+npm run db:deploy   # apply migrations
+npm run db:seed     # load frameworks and exercises (safe to re-run)
 ```
 
 4. **Run development server**
@@ -401,9 +401,12 @@ npm run build        # Production build
 npm run start        # Production server
 npm run lint         # ESLint
 npm run db:generate  # Generate Prisma client
-npm run db:push      # Push schema to database
-npm run db:migrate   # Run migrations
-npm run db:seed      # Seed exercise data
+npm run typecheck    # TypeScript check
+npm test             # Unit tests
+npm run test:e2e     # Playwright end-to-end tests
+npm run db:migrate   # Create a migration after editing schema.prisma
+npm run db:deploy    # Apply migrations
+npm run db:seed      # Seed frameworks and exercises
 ```
 
 ### Key Directories

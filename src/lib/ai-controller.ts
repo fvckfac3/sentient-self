@@ -1,8 +1,8 @@
 import { ConversationState, Exercise, UserWithProfile } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { SYSTEM_PROMPT_V3 } from '@/lib/system-prompt'
-import { getModel, getDefaultModelForTier, type ModelId } from '@/lib/models'
-import { generateText } from 'ai'
+import { getModel, resolveModelId, type ModelId } from '@/lib/models'
+import { generateText, stepCountIs, tool } from 'ai'
 import { z } from 'zod'
 import { searchExercises } from './exercise-search'
 import { 
@@ -36,7 +36,8 @@ export interface AIControllerConfig {
     exercise: any
     framework: any
   }
-  modelId?: ModelId
+  /** Untrusted model ID from the client; validated against the user's tier */
+  modelId?: string
 }
 
 export interface AIResponse {
@@ -67,10 +68,12 @@ export class AIController {
     this.recentMessages = config.recentMessages
     this.exerciseContext = config.exerciseContext
     
-    // Use provided modelId or fall back to user's preferred model or tier default
-    this.modelId = config.modelId || 
-                   (this.user.preferredModel as ModelId) || 
-                   getDefaultModelForTier(this.user.subscriptionTier as any)
+    // Use requested model, then the user's preferred model, then the tier
+    // default - skipping any the user's subscription doesn't include
+    this.modelId = resolveModelId(
+      [config.modelId, this.user.preferredModel],
+      this.user.subscriptionTier
+    )
   }
 
   async generateResponse(userMessage: string): Promise<AIResponse> {
@@ -113,9 +116,22 @@ export class AIController {
         triggers: crisisCheck.triggers,
         action: crisisCheck.recommendedAction
       })
-      
-      // For medium/low, include safety awareness in AI response but don't block conversation
-      // This will be handled naturally by the AI with appropriate empathy
+    }
+
+    // Passive ideation gets a fixed safety check-in (asks directly about
+    // self-harm, gives 988) instead of relying on the model to raise it.
+    // The conversation stays open; low severity is left to the model.
+    if (crisisCheck.severity === 'medium') {
+      return {
+        content: getCrisisResponse('medium'),
+        newState: this.currentState,
+        crisisDetected: false,
+        crisisSeverity: 'medium',
+        metadata: {
+          crisisIndicators: crisisCheck.triggers,
+          stateTransitionReason: 'Passive ideation detected - safety check-in'
+        }
+      }
     }
 
     // Step 1: Reset decline flag if enough time has passed
@@ -207,7 +223,7 @@ export class AIController {
     }
 
     // Step 11: Validate state transition
-    if (!validTransitions.includes(response.newState)) {
+    if (response.newState !== this.currentState && !validTransitions.includes(response.newState)) {
       console.warn(`Invalid state transition from ${this.currentState} to ${response.newState}`)
       response.newState = this.currentState // Stay in current state
     }
@@ -341,9 +357,6 @@ export class AIController {
       context += '\n\n' + exercisePromptOverride
     }
 
-    // Get user's AI model preference based on subscription
-    const model = this.getAIModel()
-
     // Generate response based on current state
     const statePrompt = this.getStateSpecificPrompt()
 
@@ -438,35 +451,6 @@ Begin by meeting the user where they are with this issue. Use the framework phas
     return context
   }
 
-  private getAIModel(): string {
-    const limits = this.getSubscriptionLimits()
-    return limits.aiModels[0] // Use first available model
-  }
-
-  private getSubscriptionLimits() {
-    switch (this.user.subscriptionTier) {
-      case 'FREE':
-        return {
-          exercisesPerMonth: 5,
-          aiModels: ['deepseek-r1'],
-          hasJournalAnalysis: false
-        }
-      case 'PREMIUM':
-      case 'INSTITUTION':
-        return {
-          exercisesPerMonth: -1,
-          aiModels: ['deepseek-r1', 'gpt-5.2', 'claude-4.5-opus', 'gemini-3-pro', 'grok-4.1'],
-          hasJournalAnalysis: true
-        }
-      default:
-        return {
-          exercisesPerMonth: 5,
-          aiModels: ['deepseek-r1'],
-          hasJournalAnalysis: false
-        }
-    }
-  }
-
   private getStateSpecificPrompt(): string {
     switch (this.currentState) {
       case 'INIT':
@@ -540,22 +524,15 @@ Respond naturally as a compassionate therapeutic guide.`
       }))
 
       // Define the exercise search tool
-      const exerciseSearchTool = {
+      const exerciseSearchTool = tool({
         description: 'Search the therapeutic exercise database to find relevant exercises for the user. Only use this when the user has articulated a concrete challenge and you have validated all 5 gate conditions.',
-        parameters: z.object({
+        inputSchema: z.object({
           keywords: z.array(z.string()).describe('Keywords related to the user\'s challenge (e.g., ["shame", "relapse", "identity"])'),
           topic: z.string().optional().describe('Specific topic filter (e.g., "Addiction Recovery", "Trauma Processing")'),
           framework: z.string().optional().describe('Specific framework filter (e.g., "Trauma Alchemy", "CBT")'),
           limit: z.number().default(3).describe('Number of exercises to return (default 3, max 5)')
         }),
-        // Vercel AI SDK compatibility
-        get inputSchema() { return this.parameters },
-        execute: async ({ keywords, topic, framework, limit }: {
-          keywords: string[]
-          topic?: string
-          framework?: string
-          limit?: number
-        }) => {
+        execute: async ({ keywords, topic, framework, limit }) => {
           console.log('🔧 AI attempting to call searchExercises tool:', { keywords, topic, framework, limit })
           
           // GATE VALIDATION: Check if all conditions are met before allowing search
@@ -597,7 +574,7 @@ Respond naturally as a compassionate therapeutic guide.`
             count: exercises.length
           }
         }
-      }
+      })
 
       // Generate response using Vercel AI SDK with dynamic model and tools
       const result = await generateText({
@@ -610,22 +587,26 @@ Respond naturally as a compassionate therapeutic guide.`
         tools: {
           searchExercises: exerciseSearchTool
         },
-        temperature: 0.8
+        // Let the model read the tool result and reply in the same turn;
+        // with the default single step, a tool call returns empty text
+        stopWhen: stepCountIs(3)
       })
 
       const text = result.text
 
+      // Tool calls from every step (result.toolCalls only covers the last step)
+      const toolCalls = result.steps.flatMap(step => step.toolCalls)
+
       // Log tool usage for debugging
-      if (result.toolCalls && result.toolCalls.length > 0) {
-        console.log('🤖 AI used tools:', result.toolCalls.map(tc => tc.toolName))
-        console.log('📊 Tool results:', result.toolResults)
+      if (toolCalls.length > 0) {
+        console.log('🤖 AI used tools:', toolCalls.map(tc => tc.toolName))
       }
 
       // Simple state detection - AI stays in current state unless explicitly transitioning
       let newState = this.currentState
       
       // If AI called searchExercises tool, transition to EXERCISE_SUGGESTION
-      if (result.toolCalls && result.toolCalls.some(tc => tc.toolName === 'searchExercises')) {
+      if (toolCalls.some(tc => tc.toolName === 'searchExercises')) {
         newState = 'EXERCISE_SUGGESTION'
         console.log('🎯 State transition: EXERCISE_SUGGESTION (AI called searchExercises)')
       } else if (this.currentState === 'CONVERSATIONAL_DISCOVERY') {

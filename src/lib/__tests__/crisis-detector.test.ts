@@ -60,3 +60,20 @@ describe('Crisis Detector', () => {
         })
     })
 })
+
+describe('Crisis Detector - passive ideation phrasing', () => {
+    it.each([
+        'I wish I could just disappear',
+        'sometimes I wish I would simply vanish',
+        "I wish I'd never wake up",
+        'I wish I was never born',
+    ])('flags "%s" for a safety check', (message) => {
+        const result = detectCrisis(message)
+        expect(['medium', 'high', 'critical']).toContain(result.severity)
+        expect(result.recommendedAction).not.toBe('continue')
+    })
+
+    it('treats "I wish I was dead" as high severity', () => {
+        expect(detectCrisis('I wish I was dead').severity).toBe('high')
+    })
+})

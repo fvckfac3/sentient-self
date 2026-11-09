@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { stripe, getOrCreateStripeCustomer, STRIPE_PREMIUM_PRICE_ID, STRIPE_INSTITUTION_PRICE_ID } from '@/lib/stripe'
+import { stripe, getOrCreateStripeCustomer, priceIdForPlan } from '@/lib/stripe'
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rate-limit'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,23 +18,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const limited = await rateLimit({ key: `billing:${session.user.id}`, ...LIMITS.billing })
+    if (!limited.success) return rateLimitResponse(limited)
+
     // Parse request body
     const body = await request.json()
-    const { priceId, plan } = body
-
-    // Validate price ID
-    let validPriceId: string | undefined
-    if (plan === 'premium' && STRIPE_PREMIUM_PRICE_ID) {
-      validPriceId = STRIPE_PREMIUM_PRICE_ID
-    } else if (plan === 'institution' && STRIPE_INSTITUTION_PRICE_ID) {
-      validPriceId = STRIPE_INSTITUTION_PRICE_ID
-    } else if (priceId) {
-      validPriceId = priceId
-    }
+    // Only server-configured prices can be bought; never take a price ID from the client
+    const plan = body.plan ?? 'premium'
+    const validPriceId = priceIdForPlan(plan)
 
     if (!validPriceId) {
       return NextResponse.json(
-        { error: 'Invalid plan or price ID' },
+        { error: 'Invalid plan' },
         { status: 400 }
       )
     }
@@ -60,11 +58,12 @@ export async function POST(request: NextRequest) {
       cancel_url: `${origin}/chat?canceled=true`,
       metadata: {
         userId: session.user.id,
-        plan: plan || 'premium',
+        plan,
       },
       subscription_data: {
         metadata: {
           userId: session.user.id,
+          plan,
         },
       },
       allow_promotion_codes: true,

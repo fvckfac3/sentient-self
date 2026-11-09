@@ -2,8 +2,8 @@
  * AI-powered journal insights using Vercel AI SDK
  */
 
-import { openai } from '@ai-sdk/openai'
 import { generateText } from 'ai'
+import { getModel, DEFAULT_FREE_MODEL } from '@/lib/models'
 
 export interface JournalEntryData {
   content: string
@@ -15,7 +15,7 @@ export interface JournalEntryData {
 
 /**
  * Generate AI insights for a journal entry
- * Uses GPT-4o-mini for cost-effective, high-quality analysis
+ * Uses the default model for cost-effective, high-quality analysis
  */
 export async function generateJournalInsights(entry: JournalEntryData): Promise<string> {
   const prompt = `You are a supportive AI coach analyzing a daily journal entry. Provide brief, encouraging insights (2-3 sentences).
@@ -36,9 +36,8 @@ Keep it warm, brief, and supportive. Focus on their strengths and resilience.`
 
   try {
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: getModel(DEFAULT_FREE_MODEL),
       prompt,
-      temperature: 0.7,
     })
 
     return text

@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, ReactNode } from "react"
+import { usePathname } from "next/navigation"
 import { useDisclaimer } from "@/hooks/use-disclaimer"
 import { MedicalDisclaimer } from "@/components/legal/medical-disclaimer"
 
@@ -30,6 +31,10 @@ export function DisclaimerProvider({ children }: DisclaimerProviderProps) {
     acknowledge, 
     needsDisclaimer 
   } = useDisclaimer()
+  const pathname = usePathname()
+
+  // Onboarding has its own consent step; legal pages must stay readable
+  const suppressed = ['/onboarding', '/privacy', '/terms', '/auth'].some(p => pathname.startsWith(p))
 
   const handleAcknowledge = async () => {
     await acknowledge()
@@ -47,7 +52,7 @@ export function DisclaimerProvider({ children }: DisclaimerProviderProps) {
         showCrisisDisclaimer: () => {} // Implement if needed for crisis mode
       }}
     >
-      {needsDisclaimer && (
+      {needsDisclaimer && !suppressed && (
         <MedicalDisclaimer
           onAcknowledge={handleAcknowledge}
           isLoading={isAcknowledging}

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { getModel } from '@/lib/models'
+import { getModel, DEFAULT_FREE_MODEL } from '@/lib/models'
 import { generateText } from 'ai'
 
 /**
@@ -53,7 +53,7 @@ export async function generateInsight(params: GenerateInsightParams) {
         userContext
     )
 
-    const model = getModel('deepseek-chat')
+    const model = getModel(DEFAULT_FREE_MODEL)
 
     let synthesis = ''
     let annotations: string[] = []
@@ -81,7 +81,7 @@ Example annotations: "self-compassion practice | recognizing triggers | breaking
                     content: synthesisPrompt
                 }
             ],
-            maxTokens: 500
+            maxOutputTokens: 500
         })
 
         const text = result.text || ''
